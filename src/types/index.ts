@@ -91,6 +91,9 @@ export interface ICategory {
   subcategoriesText: string;
   tag?: string;
   description?: string;
+  basePrice?: number;
+  unit?: string;
+  gstRate?: number;
 }
 
 export interface IService {

@@ -8,7 +8,7 @@ interface StatCardProps {
   icon?: LucideIcon;
   badge?: {
     text: string;
-    type?: 'neutral' | 'success' | 'warning' | 'primary';
+    type?: 'neutral' | 'success' | 'warning' | 'primary' | 'info';
   };
   onClick?: () => void;
 }
@@ -52,6 +52,8 @@ export const StatCard: React.FC<StatCardProps> = ({
                 ? 'bg-amber-50 text-amber-700 border-amber-200'
                 : badge.type === 'primary'
                 ? 'bg-blue-50 text-[#007AFF] border-blue-200'
+                : badge.type === 'info'
+                ? 'bg-sky-50 text-sky-700 border-sky-200'
                 : 'bg-[#F5F5F7] text-[#86868B] border-[#E5E5EA]'
             }`}
           >
