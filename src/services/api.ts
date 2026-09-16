@@ -23,7 +23,8 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const url = endpoint.startsWith('http') ? endpoint : endpoint;
+  const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+  const url = endpoint.startsWith('http') ? endpoint : `${apiBaseUrl}${endpoint}`;
 
   const res = await fetch(url, {
     ...options,
