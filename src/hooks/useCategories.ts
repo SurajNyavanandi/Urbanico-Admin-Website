@@ -13,7 +13,6 @@ export function useCategories() {
       setError(null);
       const list = await fetchCategoriesApi();
       setCategories(list);
-      console.log(`[Backend Data] Categories found: ${list.length}`);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch categories');
     } finally {

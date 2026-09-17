@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
-import { AdminSidebar, NavigationTab } from './AdminSidebar';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
+import { AdminSidebar } from './AdminSidebar';
+import type { NavigationTab } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 import { ToastContainer, ToastMessage } from '../common/Toast';
 import { IAdminUser } from '../../types';
 import { fetchHealthApi } from '../../services/authApi';
 import { fetchOrdersApi } from '../../services/orderApi';
-import { verifyUrbanicoBackendCatalog } from '../../services/catalogVerifier';
 import { CardSkeletonGrid } from '../common/ShimmerSkeleton';
 
-import { OrdersView } from '../modules/orders/OrdersView';
-import { MaterialsView } from '../modules/materials/MaterialsView';
-import { CategoriesView } from '../modules/categories/CategoriesView';
-import { ServicesView } from '../modules/services/ServicesView';
-import { CustomersView } from '../modules/customers/CustomersView';
+// Code Splitting / Lazy Loading for modules
+const OrdersView = lazy(() => import('../modules/orders/OrdersView').then(m => ({ default: m.OrdersView })));
+const MaterialsView = lazy(() => import('../modules/materials/MaterialsView').then(m => ({ default: m.MaterialsView })));
+const CategoriesView = lazy(() => import('../modules/categories/CategoriesView').then(m => ({ default: m.CategoriesView })));
+const ServicesView = lazy(() => import('../modules/services/ServicesView').then(m => ({ default: m.ServicesView })));
+const CustomersView = lazy(() => import('../modules/customers/CustomersView').then(m => ({ default: m.CustomersView })));
 
 interface AppShellProps {
   adminUser: IAdminUser;
@@ -53,9 +54,6 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
 
       const ordersData = await fetchOrdersApi({ status: 'received' });
       setPendingOrdersCount(ordersData.count || 0);
-
-      // Verify backend catalog data on admin panel load / sync
-      await verifyUrbanicoBackendCatalog();
     } catch {
       setDbConnected(false);
     }
@@ -92,7 +90,7 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
+      <div className="flex-1 lg:pl-[260px] flex flex-col min-w-0 transition-all duration-300">
         <AdminHeader
           currentTab={currentTab}
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
@@ -100,16 +98,16 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
           isRefreshing={isRefreshing}
         />
 
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
           <Suspense
             fallback={
               <div className="space-y-6 pt-4">
                 <CardSkeletonGrid count={4} />
-                <div className="h-64 bg-white rounded-2xl border border-[#E5E5EA] p-6 animate-pulse" />
+                <div className="h-64 bg-white rounded-[8px] border border-[#E5E5EA] p-6 animate-pulse" />
               </div>
             }
           >
-            <div key={refreshKey}>
+            <div key={refreshKey} className="animate-in fade-in duration-300">
               {currentTab === 'orders' && <OrdersView onShowToast={showToast} />}
               {currentTab === 'materials' && <MaterialsView onShowToast={showToast} />}
               {currentTab === 'categories' && <CategoriesView onShowToast={showToast} />}

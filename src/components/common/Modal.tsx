@@ -48,35 +48,35 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Dialog container */}
       <div
-        className={`relative w-full ${maxWidthClass} bg-white rounded-2xl shadow-xl border border-[#E5E5EA] z-10 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col`}
+        className={`relative w-full ${maxWidthClass} bg-[#FFFFFF] rounded-[16px] shadow-[0_12px_24px_rgba(0,0,0,0.12)] border border-[#E5E5EA] z-10 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col`}
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E5E5EA] bg-white sticky top-0 z-10">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#E5E5EA] bg-[#FFFFFF] sticky top-0 z-10">
           <div>
-            <h3 className="text-lg font-bold text-[#1D1D1F] tracking-tight">{title}</h3>
-            {subtitle && <p className="text-xs text-[#86868B] mt-0.5">{subtitle}</p>}
+            <h3 className="text-[18px] sm:text-[20px] font-semibold text-[#000000] tracking-[-0.02em] leading-tight">{title}</h3>
+            {subtitle && <p className="text-[13px] text-[#555555] mt-1">{subtitle}</p>}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#86868B] hover:text-[#1D1D1F] hover:bg-[#E5E5EA] transition-colors"
+            className="w-[32px] h-[32px] shrink-0 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#555555] hover:text-[#000000] hover:bg-[#E5E5EA] transition-colors ml-2"
             aria-label="Close dialog"
           >
-            <X className="w-4 h-4" />
+            <X className="w-[16px] h-[16px]" />
           </button>
         </div>
 
         {/* Body content */}
-        <div className="p-6 overflow-y-auto">{children}</div>
+        <div className="p-4 sm:p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

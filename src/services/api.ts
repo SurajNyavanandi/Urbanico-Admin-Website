@@ -23,8 +23,9 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const apiBaseUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-  const url = endpoint.startsWith('http') ? endpoint : `${apiBaseUrl}${endpoint}`;
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+  // Check if the endpoint already includes /api, if not prepend it, unless it's an absolute URL
+  let url = endpoint.startsWith('http') ? endpoint : `${apiBaseUrl}${endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`}`;
 
   const res = await fetch(url, {
     ...options,
@@ -40,8 +41,9 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
 
   if (!res.ok || data.success === false) {
     const errorMsg = data.error || data.message || `Request failed with status ${res.status}`;
-    throw new ApiError(errorMsg, res.status, data.details);
+    throw new Error(errorMsg);
   }
 
   return data as T;
 }
+

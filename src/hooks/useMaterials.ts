@@ -95,17 +95,6 @@ export function useMaterials(initialCategory: string = 'all') {
       });
       setMaterialsBreakdown(breakdown);
 
-      // Minimalistic & comprehensive console log for backend verification
-      console.log(
-        `[Backend Data] Categories: ${catsFound} | Material Categories: ${matCatsFound} | Distinct Sub-Categories: ${subCatsFound} | Services: ${totalServicesCount} (services have no sub-categories)`
-      );
-      console.log('--- Details: Each Material Sub-Categories & Services Count ---');
-      breakdown.forEach((item, index) => {
-        console.log(
-          `  ${index + 1}. "${item.name}" [${item.category}] contains ${item.subCategoriesCount} sub-categor${item.subCategoriesCount === 1 ? 'y' : 'ies'}: [${item.subCategories.join(', ') || 'None'}]`
-        );
-      });
-      console.log(`--- Services Summary: ${totalServicesCount} Services registered (Services do not have any sub-categories) ---`);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch materials from backend');
     } finally {

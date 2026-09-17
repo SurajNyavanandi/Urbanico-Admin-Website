@@ -24,37 +24,37 @@ export const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all duration-150 ${
-        onClick ? 'cursor-pointer hover:border-[#AEAEB2] active:scale-[0.99]' : ''
+      className={`bg-[#F5F5F7] rounded-[8px] border-0 p-6 shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all duration-300 ${
+        onClick ? 'cursor-pointer hover:-translate-y-2 hover:shadow-[0_12px_24px_rgba(0,0,0,0.12)]' : ''
       }`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#86868B] truncate">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-[14px] font-semibold tracking-[-0.01em] text-[#555555]">
           {title}
         </span>
         {Icon && (
-          <div className="w-8 h-8 rounded-lg bg-[#F5F5F7] flex items-center justify-center text-[#1D1D1F]">
-            <Icon className="w-4 h-4" />
+          <div className="w-[32px] h-[32px] rounded-[8px] bg-white flex items-center justify-center text-[#000000] shadow-sm">
+            <Icon className="w-[16px] h-[16px]" />
           </div>
         )}
       </div>
 
-      <div className="flex items-baseline justify-between gap-2">
-        <div className="text-2xl font-bold tracking-tight text-[#1D1D1F] font-mono">
+      <div className="flex items-baseline justify-between gap-3">
+        <div className="text-[34px] font-semibold tracking-[-0.02em] leading-tight text-[#000000]">
           {value}
         </div>
         {badge && (
           <span
-            className={`text-xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${
+            className={`text-[12px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${
               badge.type === 'success'
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                ? 'bg-[#34C759] text-white'
                 : badge.type === 'warning'
-                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                ? 'bg-[#FF9500] text-white'
                 : badge.type === 'primary'
-                ? 'bg-blue-50 text-[#007AFF] border-blue-200'
+                ? 'bg-[#0071E3] text-white'
                 : badge.type === 'info'
-                ? 'bg-sky-50 text-sky-700 border-sky-200'
-                : 'bg-[#F5F5F7] text-[#86868B] border-[#E5E5EA]'
+                ? 'bg-[#0071E3] text-white'
+                : 'bg-[#E5E5EA] text-[#555555]'
             }`}
           >
             {badge.text}
@@ -63,7 +63,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       </div>
 
       {subtitle && (
-        <p className="mt-1.5 text-xs text-[#86868B] truncate font-medium">
+        <p className="mt-2 text-[14px] text-[#A1A1A6] font-normal truncate">
           {subtitle}
         </p>
       )}

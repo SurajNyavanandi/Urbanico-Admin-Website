@@ -36,12 +36,12 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <AlertTriangle className="w-6 h-6" />
         </div>
         <p className="text-sm text-[#86868B] mb-6">{message}</p>
-        <div className="flex items-center gap-3 w-full">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full mt-2">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 py-2 px-4 rounded-xl border border-[#E5E5EA] text-sm font-semibold text-[#1D1D1F] hover:bg-[#F5F5F7] transition-all"
+            className="flex-1 w-full py-[10px] px-4 rounded-[8px] border border-[#E5E5EA] text-[14px] font-medium text-[#000000] hover:bg-[#F5F5F7] transition-all"
           >
             {cancelLabel}
           </button>
@@ -49,10 +49,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`flex-1 py-2 px-4 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.98] ${
+            className={`flex-1 w-full py-[10px] px-4 rounded-[8px] text-[14px] font-medium text-white transition-all active:scale-[0.98] ${
               isDestructive
                 ? 'bg-[#FF3B30] hover:bg-red-600'
-                : 'bg-[#007AFF] hover:bg-blue-600'
+                : 'bg-[#0071E3] hover:bg-blue-600'
             }`}
           >
             {isLoading ? 'Processing...' : confirmLabel}

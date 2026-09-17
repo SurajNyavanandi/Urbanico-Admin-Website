@@ -69,9 +69,9 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Metric Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <StatCard
           title="Trade Services"
           value={services.length}
@@ -95,10 +95,10 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
       </div>
 
       {/* Header controls banner */}
-      <div className="bg-white rounded-2xl border border-[#E5E5EA] p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-sm font-bold text-[#1D1D1F]">Contractor & Labor Services Directory ({services.length} Total)</h3>
-          <p className="text-xs text-[#86868B] mt-0.5">
+          <h3 className="text-[15px] font-semibold text-[#000000]">Contractor & Labor Services Directory ({services.length} Total)</h3>
+          <p className="text-[14px] text-[#555555] mt-1">
             Direct trade bookings for civil sites. Note: Trade services do not have sub-categories.
           </p>
         </div>
@@ -109,9 +109,9 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
             setEditingService(null);
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#007AFF] hover:bg-blue-600 text-white text-xs font-semibold shadow-xs active:scale-[0.98] transition-all"
+          className="flex items-center justify-center gap-2 px-6 h-[44px] w-full sm:w-auto shrink-0 rounded-[8px] bg-[#0071E3] hover:bg-blue-600 text-white text-[14px] font-medium shadow-sm active:scale-[0.98] transition-all"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-[16px] h-[16px]" />
           <span>Add Trade Service</span>
         </button>
       </div>
@@ -120,7 +120,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
       {isLoading ? (
         <CardSkeletonGrid count={4} />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((srv) => (
             <ServiceCard
               key={srv._id || srv.id}

@@ -97,9 +97,9 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Metric Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Orders"
           value={metrics.totalCount}
@@ -129,9 +129,9 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
       </div>
 
       {/* Triage Controls: Status Segment Pills + Search Input */}
-      <div className="bg-white rounded-2xl border border-[#E5E5EA] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Status Segment Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
           {STATUS_FILTERS.map((f) => {
             const isActive = selectedStatus === f.id;
             return (
@@ -139,10 +139,10 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
                 key={f.id}
                 type="button"
                 onClick={() => setSelectedStatus(f.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-4 py-2 rounded-full text-[14px] font-medium whitespace-nowrap transition-all duration-300 ${
                   isActive
-                    ? 'bg-[#007AFF] text-white shadow-xs'
-                    : 'bg-[#F5F5F7] text-[#86868B] hover:text-[#1D1D1F] hover:bg-[#E5E5EA]'
+                    ? 'bg-[#0071E3] text-white shadow-sm'
+                    : 'bg-[#F5F5F7] text-[#555555] hover:text-[#000000] hover:bg-[#E5E5EA]'
                 }`}
               >
                 {f.label}
@@ -152,7 +152,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
         </div>
 
         {/* Search input */}
-        <div className="w-full md:w-72 shrink-0">
+        <div className="w-full md:w-[320px] shrink-0">
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
@@ -162,18 +162,18 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
       </div>
 
       {/* Orders Table Container */}
-      <div className="bg-white rounded-2xl border border-[#E5E5EA] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      <div className="bg-white rounded-[8px] border border-[#E5E5EA] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#E5E5EA] bg-[#F5F5F7]/50 text-[11px] font-semibold uppercase tracking-wider text-[#86868B]">
-                <th className="p-4">Order ID & Date</th>
+              <tr className="border-b border-[#E5E5EA] bg-[#F5F5F7] text-[13px] font-medium text-[#555555]">
+                <th className="p-4 px-6">Order ID & Date</th>
                 <th className="p-4">Customer Entity</th>
                 <th className="p-4">Delivery Site</th>
                 <th className="p-4">Materials</th>
                 <th className="p-4 text-right">Amount</th>
                 <th className="p-4 text-center">Status</th>
-                <th className="p-4 text-right">Inspect</th>
+                <th className="p-4 px-6 text-right">Inspect</th>
               </tr>
             </thead>
             <tbody>
@@ -181,13 +181,13 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
                 <TableSkeletonRows count={5} cols={7} />
               ) : paginatedItems.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-12 text-center">
+                  <td colSpan={7} className="p-16 text-center">
                     <div className="max-w-sm mx-auto flex flex-col items-center">
-                      <div className="w-12 h-12 rounded-2xl bg-[#F5F5F7] flex items-center justify-center text-[#86868B] mb-3">
-                        <Inbox className="w-6 h-6" />
+                      <div className="w-16 h-16 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#A1A1A6] mb-4">
+                        <Inbox className="w-8 h-8" />
                       </div>
-                      <h4 className="text-sm font-bold text-[#1D1D1F]">No orders found</h4>
-                      <p className="text-xs text-[#86868B] mt-1 mb-4">
+                      <h4 className="text-[18px] font-semibold text-[#000000]">No orders found</h4>
+                      <p className="text-[14px] text-[#86868B] mt-2 mb-6">
                         {searchQuery || selectedStatus !== 'all'
                           ? 'Try adjusting your search query or clear the status filters.'
                           : 'Orders placed by customers will immediately appear in this live queue.'}
@@ -199,7 +199,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
                             setSelectedStatus('all');
                             setSearchQuery('');
                           }}
-                          className="px-4 py-2 rounded-xl bg-[#007AFF] text-white text-xs font-semibold hover:bg-blue-600 transition-all"
+                          className="px-6 py-[12px] h-[44px] rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 transition-all flex items-center justify-center"
                         >
                           Clear Filters
                         </button>
@@ -221,33 +221,35 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
         </div>
 
         {/* Table Footer with Pagination */}
-        <div className="p-4 border-t border-[#E5E5EA] flex items-center justify-between text-xs text-[#86868B]">
+        <div className="px-6 py-4 border-t border-[#E5E5EA] flex items-center justify-between text-[13px] text-[#555555]">
           <div>
-            Showing <span className="font-semibold text-[#1D1D1F]">{paginatedItems.length}</span> of{' '}
-            <span className="font-semibold text-[#1D1D1F]">{totalItems}</span> orders
+            Showing <span className="font-semibold text-[#000000]">{paginatedItems.length}</span> of{' '}
+            <span className="font-semibold text-[#000000]">{totalItems}</span> orders
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="mr-2">
               Page {currentPage} of {totalPages}
             </span>
-            <button
-              type="button"
-              onClick={prevPage}
-              disabled={!hasPrevPage}
-              className="p-1.5 rounded-lg border border-[#E5E5EA] text-[#1D1D1F] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={nextPage}
-              disabled={!hasNextPage}
-              className="p-1.5 rounded-lg border border-[#E5E5EA] text-[#1D1D1F] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
-              aria-label="Next page"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            <div className="flex gap-1">
+              <button
+                type="button"
+                onClick={prevPage}
+                disabled={!hasPrevPage}
+                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="w-[16px] h-[16px]" />
+              </button>
+              <button
+                type="button"
+                onClick={nextPage}
+                disabled={!hasNextPage}
+                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-[16px] h-[16px]" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

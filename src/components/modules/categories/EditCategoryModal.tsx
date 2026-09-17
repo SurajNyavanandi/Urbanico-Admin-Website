@@ -180,19 +180,19 @@ export const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
           />
         </div>
 
-        <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#E5E5EA]">
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-[#E5E5EA]">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="py-2 px-4 rounded-xl border border-[#E5E5EA] text-xs font-semibold text-[#1D1D1F] hover:bg-[#F5F5F7]"
+            className="w-full sm:w-auto py-[10px] px-6 rounded-[8px] border border-[#E5E5EA] text-[14px] font-medium text-[#000000] hover:bg-[#F5F5F7]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="py-2 px-5 rounded-xl bg-[#007AFF] text-white text-xs font-semibold hover:bg-blue-600 active:scale-[0.98] transition-all"
+            className="w-full sm:w-auto py-[10px] px-6 rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 active:scale-[0.98] transition-all"
           >
             {isLoading ? 'Saving...' : 'Save Category Metadata'}
           </button>

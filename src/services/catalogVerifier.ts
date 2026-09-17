@@ -6,10 +6,23 @@
 
 export async function verifyUrbanicoBackendCatalog(backendUrl: string = window.location.origin) {
   try {
+    const readJson = async (response: Response) => {
+      if (!response.ok) {
+        throw new Error(`Catalog request failed with status ${response.status}`);
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('Catalog endpoint returned a non-JSON response; check the backend URL');
+      }
+
+      return response.json();
+    };
+
     const [catsRes, matsRes, servsRes] = await Promise.all([
-      fetch(`${backendUrl}/api/materials/categories`).then((r) => r.json()),
-      fetch(`${backendUrl}/api/materials`).then((r) => r.json()),
-      fetch(`${backendUrl}/api/services`).then((r) => r.json()),
+      fetch(`${backendUrl}/api/materials/categories`).then(readJson),
+      fetch(`${backendUrl}/api/materials`).then(readJson),
+      fetch(`${backendUrl}/api/services`).then(readJson),
     ]);
 
     const categories: Array<{ id: string; name: string }> = catsRes.categories || [];

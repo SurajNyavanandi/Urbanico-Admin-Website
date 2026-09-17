@@ -12,44 +12,44 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit, onDel
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E5EA] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between hover:border-[#AEAEB2] transition-colors group">
+    <div className="bg-white rounded-[12px] border border-[#E5E5EA] overflow-hidden flex flex-col justify-between hover:border-[#D2D2D7] hover:shadow-sm transition-all duration-300 group">
       {/* Service Image Header */}
-      <div className="h-32 w-full bg-[#F5F5F7] relative overflow-hidden border-b border-[#E5E5EA]">
+      <div className="h-[140px] w-full bg-[#F5F5F7] relative overflow-hidden border-b border-[#E5E5EA]">
         {service.image && !imgError ? (
           <img
             src={service.image}
             alt={service.name}
             referrerPolicy="no-referrer"
             onError={() => setImgError(true)}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-[#86868B] bg-linear-to-br from-[#F5F5F7] to-[#E5E5EA]">
-            <Wrench className="w-8 h-8 mb-1 text-[#86868B]" />
-            <span className="text-[11px] font-medium">Urbanico Trade Service</span>
+          <div className="w-full h-full flex flex-col items-center justify-center text-[#A1A1A6] bg-linear-to-br from-[#F5F5F7] to-[#E5E5EA]">
+            <Wrench className="w-[32px] h-[32px] mb-2 text-[#A1A1A6]" />
+            <span className="text-[12px] font-medium">Urbanico Trade Service</span>
           </div>
         )}
         <div className="absolute top-3 left-3">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#007AFF] bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-blue-200/60 shadow-xs">
+          <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-[#0071E3] bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-[6px] border border-[#0071E3]/20 shadow-xs">
             {service.tag || 'SERVICES'}
           </span>
         </div>
-        <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm p-1 rounded-xl border border-white/60 shadow-xs">
+        <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/95 backdrop-blur-sm p-1.5 rounded-[8px] border border-[#E5E5EA]/60 shadow-xs">
           <button
             type="button"
             onClick={() => onEdit(service)}
-            className="p-1.5 rounded-lg text-[#86868B] hover:text-[#1D1D1F] hover:bg-[#F5F5F7] transition-colors"
+            className="p-1.5 rounded-[6px] text-[#555555] hover:text-[#000000] hover:bg-[#F5F5F7] transition-colors"
             title="Edit service details & image"
           >
-            <Edit2 className="w-3.5 h-3.5" />
+            <Edit2 className="w-[14px] h-[14px]" />
           </button>
           <button
             type="button"
             onClick={() => onDelete(service._id || service.id, service.name)}
-            className="p-1.5 rounded-lg text-[#86868B] hover:text-[#FF3B30] hover:bg-red-50 transition-colors"
+            className="p-1.5 rounded-[6px] text-[#555555] hover:text-[#FF3B30] hover:bg-red-50 transition-colors"
             title="Delete service listing"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-[14px] h-[14px]" />
           </button>
         </div>
       </div>
@@ -57,27 +57,27 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onEdit, onDel
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
           <div>
-            <h3 className="text-base font-bold text-[#1D1D1F] tracking-tight leading-tight">
+            <h3 className="text-[16px] font-semibold text-[#000000] tracking-tight leading-tight">
               {service.name}
             </h3>
-            <p className="text-xs text-[#86868B] mt-0.5 font-medium">
+            <p className="text-[13px] text-[#555555] mt-1 font-medium">
               {service.subtitle}
             </p>
           </div>
 
           {service.description && (
-            <p className="text-xs text-[#86868B] mt-2.5 leading-relaxed line-clamp-2">
+            <p className="text-[14px] text-[#555555] mt-3 leading-relaxed line-clamp-2">
               {service.description}
             </p>
           )}
         </div>
 
-        <div className="mt-5 pt-3 border-t border-[#E5E5EA] flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-[#86868B]">
-            <Wrench className="w-3.5 h-3.5" />
+        <div className="mt-5 pt-4 border-t border-[#E5E5EA] flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[13px] text-[#86868B]">
+            <Wrench className="w-[14px] h-[14px]" />
             <span>Standard Base Rate:</span>
           </div>
-          <span className="text-sm font-bold font-mono text-[#1D1D1F]">
+          <span className="text-[15px] font-bold font-mono text-[#000000]">
             {service.rate}
           </span>
         </div>

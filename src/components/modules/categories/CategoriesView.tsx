@@ -20,9 +20,9 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ onShowToast }) =
   }, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Metric Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <StatCard
           title="Active Categories"
           value={categories.length}
@@ -45,18 +45,18 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ onShowToast }) =
       </div>
 
       {/* Overview explanation banner */}
-      <div className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-sm font-bold text-[#1D1D1F]">Category Brand & Display Pricing Controls</h3>
-            <p className="text-xs text-[#86868B] mt-0.5">
+            <h3 className="text-[15px] font-semibold text-[#000000]">Category Brand & Display Pricing Controls</h3>
+            <p className="text-[14px] text-[#555555] mt-1">
               These settings control the top hero carousels and subcategory pill tags that customers see when opening the Urbanico mobile apps.
             </p>
           </div>
           <button
             type="button"
             onClick={refresh}
-            className="self-start sm:self-auto px-3 py-1.5 rounded-xl border border-[#E5E5EA] bg-[#F5F5F7] text-xs font-semibold text-[#1D1D1F] hover:bg-[#E5E5EA] transition-colors"
+            className="self-start sm:self-auto w-full sm:w-auto px-4 h-[44px] rounded-[8px] border border-[#E5E5EA] bg-[#F5F5F7] text-[14px] font-medium text-[#000000] hover:bg-[#E5E5EA] transition-colors shrink-0"
           >
             Reload Categories
           </button>
@@ -67,7 +67,7 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ onShowToast }) =
       {isLoading ? (
         <CardSkeletonGrid count={6} />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((cat) => (
             <CategoryCard
               key={cat.id}
