@@ -8,10 +8,12 @@ import {
   LogOut,
   X,
   Database,
+  ShieldCheck,
+  UserCheck,
 } from 'lucide-react';
 import { IAdminUser } from '../../types';
 
-export type NavigationTab = 'orders' | 'materials' | 'categories' | 'services' | 'customers';
+export type NavigationTab = 'orders' | 'materials' | 'categories' | 'services' | 'customers' | 'partner-kyc' | 'audit-logs';
 
 interface AdminSidebarProps {
   currentTab: NavigationTab;
@@ -45,6 +47,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'categories', label: 'Categories & Brands', icon: Layers },
     { id: 'services', label: 'Trade Services', icon: Wrench },
     { id: 'customers', label: 'Builder Directory', icon: Users },
+    { id: 'partner-kyc', label: 'Partner KYC', icon: UserCheck },
+    { id: 'audit-logs', label: 'Audit Logs', icon: ShieldCheck },
   ];
 
   const handleSelect = (tab: NavigationTab) => {
@@ -72,7 +76,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <div className="h-[64px] px-6 flex items-center justify-between mt-2">
           <div className="flex items-center gap-3">
             <img 
-              src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1786533916/logo_b3cxbf.jpg" 
+              src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1792405677/finallogo_vgc2kq.jpg" 
               alt="Urbanico Logo" 
               className="w-8 h-8 rounded-[8px] object-cover" 
             />

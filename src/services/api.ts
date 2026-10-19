@@ -25,7 +25,7 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
   // Check if the endpoint already includes /api, if not prepend it, unless it's an absolute URL
-  let url = endpoint.startsWith('http') ? endpoint : `${apiBaseUrl}${endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`}`;
+  const url = endpoint.startsWith('http') ? endpoint : `${apiBaseUrl}${endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`}`;
 
   const res = await fetch(url, {
     ...options,

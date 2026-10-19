@@ -36,6 +36,14 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
       title: 'Registered Builders Directory',
       subtitle: 'Client entities, GSTIN credentials & active delivery sites',
     },
+    'partner-kyc': {
+      title: 'Field Partner & Technician KYC',
+      subtitle: 'Aadhaar validation, trade licenses, bank verification & dispatch clearance',
+    },
+    'audit-logs': {
+      title: 'Security & Price Audit Logs',
+      subtitle: 'Immutable record of price alterations, role elevations & system actions',
+    },
   };
 
   const meta = titles[currentTab] || { title: 'Dashboard', subtitle: 'Overview' };

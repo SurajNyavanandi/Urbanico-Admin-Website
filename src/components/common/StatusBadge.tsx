@@ -36,6 +36,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'order'
         bgClass = 'bg-[#FF9500]/10 text-[#FF9500]';
         dotClass = 'bg-[#FF9500]';
         break;
+      case 'unloading':
+        label = 'Unloading';
+        bgClass = 'bg-[#7C3AED]/10 text-[#7C3AED]';
+        dotClass = 'bg-[#7C3AED]';
+        break;
       case 'delivered':
         label = 'Delivered';
         bgClass = 'bg-[#34C759]/10 text-[#34C759]';

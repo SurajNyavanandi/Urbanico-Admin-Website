@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AdminSidebar } from './AdminSidebar';
 import type { NavigationTab } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
-import { ToastContainer, ToastMessage } from '../common/Toast';
+import { ToastContainer, type ToastMessage } from '../common/Toast';
 import { IAdminUser } from '../../types';
 import { fetchHealthApi } from '../../services/authApi';
 import { fetchOrdersApi } from '../../services/orderApi';
@@ -14,6 +14,8 @@ const MaterialsView = lazy(() => import('../modules/materials/MaterialsView').th
 const CategoriesView = lazy(() => import('../modules/categories/CategoriesView').then(m => ({ default: m.CategoriesView })));
 const ServicesView = lazy(() => import('../modules/services/ServicesView').then(m => ({ default: m.ServicesView })));
 const CustomersView = lazy(() => import('../modules/customers/CustomersView').then(m => ({ default: m.CustomersView })));
+const PartnersView = lazy(() => import('../modules/partners/PartnersView').then(m => ({ default: m.PartnersView })));
+const AuditLogsView = lazy(() => import('../modules/audit/AuditLogsView').then(m => ({ default: m.AuditLogsView })));
 
 interface AppShellProps {
   adminUser: IAdminUser;
@@ -113,6 +115,8 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
               {currentTab === 'categories' && <CategoriesView onShowToast={showToast} />}
               {currentTab === 'services' && <ServicesView onShowToast={showToast} />}
               {currentTab === 'customers' && <CustomersView onShowToast={showToast} />}
+              {currentTab === 'partner-kyc' && <PartnersView onShowToast={showToast} />}
+              {currentTab === 'audit-logs' && <AuditLogsView onShowToast={showToast} />}
             </div>
           </Suspense>
         </main>

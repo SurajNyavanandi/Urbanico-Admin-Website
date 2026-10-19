@@ -9,6 +9,7 @@ import { Modal } from '../../common/Modal';
 import { TableSkeletonRows } from '../../common/ShimmerSkeleton';
 import { usePagination } from '../../../hooks/usePagination';
 import { IMaterial } from '../../../types';
+import { downloadCsv } from '../../../utils/exportCsv';
 import {
   Package,
   CheckCircle2,
@@ -20,6 +21,7 @@ import {
   ChevronRight,
   Wrench,
   Info,
+  Download,
 } from 'lucide-react';
 
 interface MaterialsViewProps {
@@ -123,6 +125,46 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
     }
   };
 
+  const handleExportCsv = () => {
+    if (materials.length === 0) {
+      onShowToast('Export Empty', 'No materials available to export', 'info');
+      return;
+    }
+
+    const headers = [
+      'Material Name',
+      'Category',
+      'Brand',
+      'Grade',
+      'Default Price (INR)',
+      'Unit',
+      'HSN Code',
+      'GST Rate (%)',
+      'In Stock',
+      'Stock Quantity',
+      'Min Order Quantity',
+      'Origin Yard',
+    ];
+
+    const rows = materials.map((m) => [
+      m.name,
+      m.category,
+      m.brand || '',
+      m.grade || '',
+      m.defaultPrice,
+      m.unit,
+      m.hsnCode || '',
+      m.gstRate,
+      m.inStock ? 'Yes' : 'No',
+      m.stockQuantity,
+      m.minOrderQuantity || 1,
+      m.originYard || '',
+    ]);
+
+    downloadCsv('urbanico_materials', headers, rows);
+    onShowToast('CSV Downloaded', `Exported ${materials.length} catalog items to CSV`, 'success');
+  };
+
   return (
     <div className="space-y-8">
       {/* Metric Cards Row */}
@@ -166,7 +208,7 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
         />
       </div>
 
-      {/* Action Controls: Category Tabs, Subcategories, Search, Add Product */}
+      {/* Action Controls: Category Tabs, Subcategories, Search, Export CSV & Add Product */}
       <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-4 space-y-4">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Dynamic Category Pills */}
@@ -190,20 +232,29 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
             })}
           </div>
 
-          {/* Search & Add CTA */}
+          {/* Search, Export CSV & Add CTA */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-            <div className="w-full sm:w-[240px] md:w-[280px]">
+            <div className="w-full sm:w-[220px] md:w-[260px]">
               <SearchInput
                 value={searchQuery}
                 onChange={setSearchQuery}
                 placeholder="Search product, brand, grade..."
               />
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                type="button"
+                onClick={handleExportCsv}
+                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-3.5 h-[44px] rounded-[8px] border border-[#E5E5EA] bg-white hover:bg-[#F5F5F7] text-[#1D1D1F] text-[13px] font-medium active:scale-[0.98] transition-all cursor-pointer"
+                title="Export filtered materials list as CSV"
+              >
+                <Download className="w-[14px] h-[14px] text-[#555555]" />
+                <span className="hidden sm:inline">Export CSV</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setIsDetailsModalOpen(true)}
-                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-4 h-[44px] rounded-[8px] bg-[#F5F5F7] hover:bg-[#E5E5EA] text-[#000000] text-[14px] font-medium transition-all"
+                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-4 h-[44px] rounded-[8px] bg-[#F5F5F7] hover:bg-[#E5E5EA] text-[#000000] text-[14px] font-medium transition-all cursor-pointer"
                 title="View how many sub-categories each material contains & services count"
               >
                 <Info className="w-[16px] h-[16px] text-[#0071E3]" />
@@ -212,7 +263,7 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
               <button
                 type="button"
                 onClick={handleOpenAdd}
-                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-6 h-[44px] rounded-[8px] bg-[#0071E3] hover:bg-blue-600 text-white text-[14px] font-medium shadow-sm active:scale-[0.98] transition-all"
+                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-6 h-[44px] rounded-[8px] bg-[#0071E3] hover:bg-blue-600 text-white text-[14px] font-medium shadow-sm active:scale-[0.98] transition-all cursor-pointer"
               >
                 <Plus className="w-[16px] h-[16px]" />
                 <span>Add Product</span>

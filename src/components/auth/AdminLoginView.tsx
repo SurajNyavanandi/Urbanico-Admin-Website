@@ -12,14 +12,6 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fallbackAdminUser: IAdminUser = {
-    name: 'Master Admin (Kanu Suraj)',
-    phone: '9666635009',
-    role: 'super_admin',
-    email: 'kanusuraj15@gmail.com',
-    creditLimit: 5000000,
-  };
-
   const executeLogin = (user: IAdminUser, token: string) => {
     localStorage.setItem('urbanico_admin_session', token);
     localStorage.setItem('urbanico_admin_user', JSON.stringify(user));
@@ -47,13 +39,8 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
       });
 
       executeLogin(res.user, res.token);
-    } catch {
-      // Fallback for dummy credentials mode mentioned in the prompt test credentials
-      if (phone.trim() === '9666635009' || authKey.trim() === '9666635009' || authKey.trim() === '261125') {
-        executeLogin(fallbackAdminUser, `urbanico_jwt_session_${Date.now()}`);
-      } else {
-        setError('Authentication failed. Check your credentials.');
-      }
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +52,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
         
         {/* Brand */}
         <img 
-          src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1786533916/logo_b3cxbf.jpg" 
+          src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1792405677/finallogo_vgc2kq.jpg" 
           alt="Urbanico Logo" 
           className="w-16 h-16 rounded-[12px] object-cover mb-8 shadow-sm" 
         />
