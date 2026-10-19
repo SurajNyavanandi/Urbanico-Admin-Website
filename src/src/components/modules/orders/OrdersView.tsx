@@ -7,7 +7,8 @@ import { SearchInput } from '../../common/SearchInput';
 import { TableSkeletonRows } from '../../common/ShimmerSkeleton';
 import { usePagination } from '../../../hooks/usePagination';
 import { IOrder, OrderStatus } from '../../../types';
-import { formatCurrency } from '../../../utils/formatters';
+import { formatCurrency, formatDate } from '../../../utils/formatters';
+import { downloadCsv } from '../../../utils/exportCsv';
 import {
   ShoppingBag,
   Clock,
@@ -16,6 +17,7 @@ import {
   Inbox,
   ChevronLeft,
   ChevronRight,
+  Download,
 } from 'lucide-react';
 
 interface OrdersViewProps {
@@ -26,9 +28,10 @@ const STATUS_FILTERS: { id: string; label: string }[] = [
   { id: 'all', label: 'All Orders' },
   { id: 'received', label: 'Received' },
   { id: 'confirmed', label: 'Confirmed' },
-  { id: 'processing', label: 'Processing' },
-  { id: 'dispatched', label: 'Dispatched' },
-  { id: 'delivered', label: 'Delivered' },
+  { id: 'processing', label: 'Loading at Quarry' },
+  { id: 'in_transit', label: 'En-Route to Site' },
+  { id: 'unloading', label: 'Unloading' },
+  { id: 'delivered', label: 'Complete' },
   { id: 'cancelled', label: 'Cancelled' },
 ];
 
@@ -96,6 +99,66 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
     return updated;
   };
 
+  const handleExportCsv = () => {
+    if (orders.length === 0) {
+      onShowToast('Export Empty', 'No orders available to export', 'info');
+      return;
+    }
+
+    const headers = [
+      'Order Number',
+      'Created At',
+      'Customer Name',
+      'Customer Phone',
+      'Customer Email',
+      'GSTIN',
+      'Site Name',
+      'Street Address',
+      'City',
+      'Items Summary',
+      'Subtotal (INR)',
+      'Tax Amount (INR)',
+      'Delivery Charges (INR)',
+      'Unloading Charges (INR)',
+      'Total Amount (INR)',
+      'Payment Status',
+      'Payment Method',
+      'Order Status',
+      'Vehicle Number',
+      'Driver Name',
+      'Driver Phone',
+      'eWay Bill No',
+    ];
+
+    const rows = orders.map((o) => [
+      o.orderNumber,
+      formatDate(o.createdAt),
+      o.customerName,
+      o.customerPhone,
+      o.customerEmail || '',
+      o.gstin || '',
+      o.siteAddress?.siteName || '',
+      o.siteAddress?.street || '',
+      o.siteAddress?.city || '',
+      o.items.map((i) => `${i.name} (${i.quantity} ${i.unit})`).join('; '),
+      o.subtotal,
+      o.taxAmount,
+      o.deliveryCharges,
+      o.unloadingCharges,
+      o.totalAmount,
+      o.paymentStatus,
+      o.paymentMethod,
+      o.orderStatus,
+      o.vehicleNumber || '',
+      o.driverName || '',
+      o.driverPhone || '',
+      o.eWayBillNo || '',
+    ]);
+
+    downloadCsv('urbanico_orders', headers, rows);
+    onShowToast('CSV Downloaded', `Exported ${orders.length} orders to CSV`, 'success');
+  };
+
   return (
     <div className="space-y-8">
       {/* Metric Cards Row */}
@@ -128,7 +191,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
         />
       </div>
 
-      {/* Triage Controls: Status Segment Pills + Search Input */}
+      {/* Triage Controls: Status Segment Pills + Search Input + Export CSV */}
       <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Status Segment Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
@@ -151,13 +214,24 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
           })}
         </div>
 
-        {/* Search input */}
-        <div className="w-full md:w-[320px] shrink-0">
-          <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="Search by order #, client, city..."
-          />
+        {/* Search input & Export CSV Button */}
+        <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
+          <div className="w-full md:w-[240px]">
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search by order #, client, city..."
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            className="flex items-center gap-2 px-3.5 h-[44px] rounded-[8px] border border-[#E5E5EA] bg-white hover:bg-[#F5F5F7] text-[#1D1D1F] text-[13px] font-medium active:scale-[0.98] transition-all cursor-pointer shrink-0"
+            title="Export filtered orders list as CSV"
+          >
+            <Download className="w-[14px] h-[14px] text-[#555555]" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
         </div>
       </div>
 

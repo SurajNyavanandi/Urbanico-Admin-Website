@@ -7,7 +7,6 @@ export interface ToastMessage {
   title: string;
   message?: string;
 }
-export const ToastMessage = {};
 
 interface ToastProps {
   toasts: ToastMessage[];

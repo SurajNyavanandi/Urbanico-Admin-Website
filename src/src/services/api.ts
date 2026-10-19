@@ -27,37 +27,23 @@ export async function request<T>(endpoint: string, options: RequestInit = {}): P
   // Check if the endpoint already includes /api, if not prepend it, unless it's an absolute URL
   const url = endpoint.startsWith('http') ? endpoint : `${apiBaseUrl}${endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`}`;
 
-  // Add a 6-second timeout to prevent requests from hanging indefinitely
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 6000);
+  const res = await fetch(url, {
+    ...options,
+    headers,
+  });
 
+  let data: any;
   try {
-    const res = await fetch(url, {
-      ...options,
-      headers,
-      signal: options.signal || controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    let data: any;
-    try {
-      data = await res.json();
-    } catch {
-      throw new Error(`Server returned status ${res.status}`);
-    }
-
-    if (!res.ok || data.success === false) {
-      const errorMsg = data.error || data.message || `Request failed with status ${res.status}`;
-      throw new Error(errorMsg);
-    }
-
-    return data as T;
-  } catch (err: any) {
-    clearTimeout(timeoutId);
-    if (err.name === 'AbortError') {
-      throw new Error('Request timed out. Please check network connection.');
-    }
-    throw err;
+    data = await res.json();
+  } catch {
+    data = { error: 'Invalid JSON response from server' };
   }
+
+  if (!res.ok || data.success === false) {
+    const errorMsg = data.error || data.message || `Request failed with status ${res.status}`;
+    throw new Error(errorMsg);
+  }
+
+  return data as T;
 }
 

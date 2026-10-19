@@ -4,6 +4,7 @@ export type OrderStatus =
   | 'processing'
   | 'dispatched'
   | 'in_transit'
+  | 'unloading'
   | 'delivered'
   | 'cancelled';
 
@@ -130,6 +131,62 @@ export interface IAdminUser {
   email?: string;
 }
 
+export interface IAuditLog {
+  _id: string;
+  action: string;
+  actorType: 'admin' | 'user' | 'system' | 'gateway';
+  actorId: string;
+  actorName?: string;
+  targetType: string;
+  targetId: string;
+  details?: {
+    materialName?: string;
+    oldPrice?: number;
+    newPrice?: number;
+    priceChanged?: boolean;
+    modifiedFields?: string[];
+    orderNumber?: string;
+    oldStatus?: string;
+    newStatus?: string;
+    vehicleNumber?: string;
+    partnerName?: string;
+    partnerRole?: string;
+    note?: string;
+    [key: string]: any;
+  };
+  ip?: string;
+  userAgent?: string;
+  createdAt: string;
+}
+
+export type PartnerSpecialty =
+  | 'RCC Masonry'
+  | 'Electrical'
+  | 'Plumbing'
+  | 'Driver'
+  | 'Excavator Operator'
+  | 'Structural Fabrication';
+
+export type KycStatus = 'approved' | 'pending' | 'rejected';
+
+export interface IPartner {
+  _id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  specialty: PartnerSpecialty;
+  role: 'technician' | 'driver';
+  kycStatus: KycStatus;
+  aadhaarNumber?: string;
+  licenseNumber?: string;
+  vehicleNumber?: string;
+  rating: number;
+  completedJobs: number;
+  city: string;
+  joinedAt: string;
+  bankVerified?: boolean;
+}
+
 export interface IApiResponse<T = any> {
   success: boolean;
   message?: string;
@@ -149,5 +206,7 @@ export const ICategory = {};
 export const IService = {};
 export const ICustomer = {};
 export const IAdminUser = {};
+export const IAuditLog = {};
+export const IPartner = {};
 export const IApiResponse = {};
 export const IHealthResponse = {};

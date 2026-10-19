@@ -53,6 +53,7 @@ export function useOrders(initialStatus: string = 'all') {
               ...(extraFields?.vehicleNumber ? { vehicleNumber: extraFields.vehicleNumber } : {}),
               ...(extraFields?.driverName ? { driverName: extraFields.driverName } : {}),
               ...(extraFields?.driverPhone ? { driverPhone: extraFields.driverPhone } : {}),
+              ...(extraFields?.eWayBillNo ? { eWayBillNo: extraFields.eWayBillNo } : {}),
             }
           : o
       )

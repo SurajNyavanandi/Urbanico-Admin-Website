@@ -1,16 +1,21 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { AdminSidebar } from './AdminSidebar';
 import type { NavigationTab } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
-import { ToastContainer, ToastMessage } from '../common/Toast';
+import { ToastContainer, type ToastMessage } from '../common/Toast';
 import { IAdminUser } from '../../types';
 import { fetchHealthApi } from '../../services/authApi';
 import { fetchOrdersApi } from '../../services/orderApi';
-import { OrdersView } from '../modules/orders/OrdersView';
-import { MaterialsView } from '../modules/materials/MaterialsView';
-import { CategoriesView } from '../modules/categories/CategoriesView';
-import { ServicesView } from '../modules/services/ServicesView';
-import { CustomersView } from '../modules/customers/CustomersView';
+import { CardSkeletonGrid } from '../common/ShimmerSkeleton';
+
+// Code Splitting / Lazy Loading for modules
+const OrdersView = lazy(() => import('../modules/orders/OrdersView').then(m => ({ default: m.OrdersView })));
+const MaterialsView = lazy(() => import('../modules/materials/MaterialsView').then(m => ({ default: m.MaterialsView })));
+const CategoriesView = lazy(() => import('../modules/categories/CategoriesView').then(m => ({ default: m.CategoriesView })));
+const ServicesView = lazy(() => import('../modules/services/ServicesView').then(m => ({ default: m.ServicesView })));
+const CustomersView = lazy(() => import('../modules/customers/CustomersView').then(m => ({ default: m.CustomersView })));
+const PartnersView = lazy(() => import('../modules/partners/PartnersView').then(m => ({ default: m.PartnersView })));
+const AuditLogsView = lazy(() => import('../modules/audit/AuditLogsView').then(m => ({ default: m.AuditLogsView })));
 
 interface AppShellProps {
   adminUser: IAdminUser;
@@ -93,17 +98,27 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
           onRefresh={handleManualRefresh}
           isRefreshing={isRefreshing}
-          adminUser={adminUser}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
-          <div key={refreshKey} className="animate-in fade-in duration-300">
-            {currentTab === 'orders' && <OrdersView onShowToast={showToast} />}
-            {currentTab === 'materials' && <MaterialsView onShowToast={showToast} />}
-            {currentTab === 'categories' && <CategoriesView onShowToast={showToast} />}
-            {currentTab === 'services' && <ServicesView onShowToast={showToast} />}
-            {currentTab === 'customers' && <CustomersView onShowToast={showToast} />}
-          </div>
+          <Suspense
+            fallback={
+              <div className="space-y-6 pt-4">
+                <CardSkeletonGrid count={4} />
+                <div className="h-64 bg-white rounded-[8px] border border-[#E5E5EA] p-6 animate-pulse" />
+              </div>
+            }
+          >
+            <div key={refreshKey} className="animate-in fade-in duration-300">
+              {currentTab === 'orders' && <OrdersView onShowToast={showToast} />}
+              {currentTab === 'materials' && <MaterialsView onShowToast={showToast} />}
+              {currentTab === 'categories' && <CategoriesView onShowToast={showToast} />}
+              {currentTab === 'services' && <ServicesView onShowToast={showToast} />}
+              {currentTab === 'customers' && <CustomersView onShowToast={showToast} />}
+              {currentTab === 'partner-kyc' && <PartnersView onShowToast={showToast} />}
+              {currentTab === 'audit-logs' && <AuditLogsView onShowToast={showToast} />}
+            </div>
+          </Suspense>
         </main>
       </div>
 

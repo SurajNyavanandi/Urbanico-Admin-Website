@@ -8,10 +8,12 @@ import {
   LogOut,
   X,
   Database,
+  ShieldCheck,
+  UserCheck,
 } from 'lucide-react';
 import { IAdminUser } from '../../types';
 
-export type NavigationTab = 'orders' | 'materials' | 'categories' | 'services' | 'customers';
+export type NavigationTab = 'orders' | 'materials' | 'categories' | 'services' | 'customers' | 'partner-kyc' | 'audit-logs';
 
 interface AdminSidebarProps {
   currentTab: NavigationTab;
@@ -45,6 +47,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'categories', label: 'Categories & Brands', icon: Layers },
     { id: 'services', label: 'Trade Services', icon: Wrench },
     { id: 'customers', label: 'Builder Directory', icon: Users },
+    { id: 'partner-kyc', label: 'Partner KYC', icon: UserCheck },
+    { id: 'audit-logs', label: 'Audit Logs', icon: ShieldCheck },
   ];
 
   const handleSelect = (tab: NavigationTab) => {
@@ -72,7 +76,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <div className="h-[64px] px-6 flex items-center justify-between mt-2">
           <div className="flex items-center gap-3">
             <img 
-              src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1790679001/logo_eugsi2.jpg" 
+              src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1792405677/finallogo_vgc2kq.jpg" 
               alt="Urbanico Logo" 
               className="w-8 h-8 rounded-[8px] object-cover" 
             />
@@ -91,31 +95,22 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           </button>
         </div>
 
-        {/* Admin Identity Banner */}
-        {(() => {
-          const envEmail = (import.meta.env.VITE_ADMIN_EMAIL || '').trim();
-          const username = adminUser.name || (envEmail ? (envEmail.includes('@') ? envEmail.split('@')[0] : envEmail) : 'Admin');
-          const emailDisplay = adminUser.email || envEmail || 'Administrator';
-          const initials = (username || 'AD').slice(0, 2).toUpperCase();
-
-          return (
-            <div className="px-6 py-4 mt-2">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#F5F5F7] text-[#000000] flex items-center justify-center font-semibold text-[13px]">
-                  {initials}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[14px] font-semibold text-[#000000] truncate leading-tight capitalize">
-                    {username}
-                  </div>
-                  <div className="text-[12px] text-[#86868B] truncate mt-0.5">
-                    {emailDisplay}
-                  </div>
-                </div>
+        {/* Single Admin Identity Banner */}
+        <div className="px-6 py-4 mt-2">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#F5F5F7] text-[#000000] flex items-center justify-center font-medium text-[14px]">
+              SA
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-[14px] font-semibold text-[#000000] truncate leading-tight">
+                {adminUser.name || 'Super Admin'}
+              </div>
+              <div className="text-[12px] text-[#86868B] truncate mt-0.5">
+                Admin
               </div>
             </div>
-          );
-        })()}
+          </div>
+        </div>
 
         {/* Navigation items */}
         <nav className="flex-1 px-4 mt-2 space-y-1 overflow-y-auto">

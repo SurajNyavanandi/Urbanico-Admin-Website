@@ -76,9 +76,18 @@ export const OrderRow: React.FC<OrderRowProps> = React.memo(({ order, onSelect }
       <td className="p-4 whitespace-nowrap text-center">
         <StatusBadge status={order.orderStatus} type="order" />
         {order.vehicleNumber && (
-          <div className="text-[11px] text-[#86868B] mt-1.5 flex items-center justify-center gap-1.5">
+          <div className="text-[11px] text-[#86868B] mt-1.5 flex items-center justify-center gap-1.5 font-mono">
             <Truck className="w-[12px] h-[12px] text-[#86868B]" />
             <span>{order.vehicleNumber}</span>
+          </div>
+        )}
+        {order.eWayBillNo && (
+          <div
+            className="text-[10px] text-[#64748B] font-mono mt-0.5 tracking-wider"
+            style={{ fontFamily: 'Consolas, Menlo, Monaco, monospace' }}
+            title={`GST e-Way Bill: ${order.eWayBillNo}`}
+          >
+            e-Way: {order.eWayBillNo}
           </div>
         )}
       </td>

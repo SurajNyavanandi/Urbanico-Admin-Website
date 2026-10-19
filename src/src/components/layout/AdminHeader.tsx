@@ -1,14 +1,12 @@
 import React from 'react';
 import { Menu, RefreshCw } from 'lucide-react';
 import type { NavigationTab } from './AdminSidebar';
-import type { IAdminUser } from '../../types';
 
 interface AdminHeaderProps {
   currentTab: NavigationTab;
   onOpenMobileSidebar: () => void;
   onRefresh: () => void;
   isRefreshing?: boolean;
-  adminUser?: IAdminUser;
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({
@@ -16,7 +14,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   onOpenMobileSidebar,
   onRefresh,
   isRefreshing = false,
-  adminUser,
 }) => {
   const titles: Record<NavigationTab, { title: string; subtitle: string }> = {
     orders: {
@@ -39,11 +36,17 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
       title: 'Registered Builders Directory',
       subtitle: 'Client entities, GSTIN credentials & active delivery sites',
     },
+    'partner-kyc': {
+      title: 'Field Partner & Technician KYC',
+      subtitle: 'Aadhaar validation, trade licenses, bank verification & dispatch clearance',
+    },
+    'audit-logs': {
+      title: 'Security & Price Audit Logs',
+      subtitle: 'Immutable record of price alterations, role elevations & system actions',
+    },
   };
 
   const meta = titles[currentTab] || { title: 'Dashboard', subtitle: 'Overview' };
-  const envAdminEmail = (import.meta.env.VITE_ADMIN_EMAIL || '').trim();
-  const displayAdmin = adminUser?.email || adminUser?.name || envAdminEmail || 'Active';
 
   return (
     <header className="h-[64px] bg-white/80 backdrop-blur-md border-b border-[#E5E5EA] sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between">
@@ -79,13 +82,11 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           <span className="hidden sm:inline">Sync Live</span>
         </button>
 
-        {/* Admin Indicator */}
+        {/* Master Admin Indicator */}
         <div className="hidden md:flex items-center gap-2 pl-4 border-l border-[#E5E5EA] text-[13px]">
           <span className="w-2 h-2 rounded-full bg-[#34C759]" />
-          <span className="text-[#555555]">Admin:</span>
-          <span className="font-medium text-[#000000] truncate max-w-[200px]" title={displayAdmin}>
-            {displayAdmin}
-          </span>
+          <span className="text-[#555555]">Single Admin Mode:</span>
+          <span className="font-medium text-[#000000]">9666635009</span>
         </div>
       </div>
     </header>

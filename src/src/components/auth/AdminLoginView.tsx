@@ -7,12 +7,8 @@ interface AdminLoginViewProps {
 }
 
 export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }) => {
-  const envEmail = (import.meta.env.VITE_ADMIN_EMAIL || '').trim();
-  // Default expected password matches the admin email configured in the environment variable
-  const envPassword = (import.meta.env.VITE_ADMIN_PASSWORD || envEmail).trim();
-
-  const [identifier, setIdentifier] = useState(envEmail);
-  const [authKey, setAuthKey] = useState(envPassword);
+  const [phone, setPhone] = useState('9666635009');
+  const [authKey, setAuthKey] = useState('9666635009');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,15 +20,12 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanIdentifier = identifier.trim();
-    const cleanKey = authKey.trim();
-
-    if (!cleanIdentifier) {
-      setError('Please enter your admin email');
+    if (!phone.trim()) {
+      setError('Please enter the phone number');
       return;
     }
-    if (!cleanKey) {
-      setError('Please enter your password');
+    if (!authKey.trim()) {
+      setError('Please enter the OTP/Password');
       return;
     }
 
@@ -40,37 +33,14 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
       setIsLoading(true);
       setError(null);
       const res = await verifyOtpApi({
-        phone: cleanIdentifier,
-        otp: cleanKey,
-        password: cleanKey,
+        phone: phone.trim(),
+        otp: authKey.trim(),
+        password: authKey.trim(),
       });
 
       executeLogin(res.user, res.token);
-    } catch {
-      // Fallback authentication using environment credentials
-      const targetEmail = envEmail || cleanIdentifier;
-      const expectedPassword = envPassword || targetEmail;
-
-      const isIdentifierValid = envEmail
-        ? cleanIdentifier.toLowerCase() === envEmail.toLowerCase()
-        : cleanIdentifier.length > 0;
-
-      const isPasswordValid = cleanKey === expectedPassword;
-
-      if (isIdentifierValid && isPasswordValid) {
-        const username = targetEmail.includes('@') ? targetEmail.split('@')[0] : targetEmail;
-        const fallbackAdminUser: IAdminUser = {
-          name: username,
-          email: targetEmail,
-          phone: '',
-          role: 'super_admin',
-          creditLimit: 5000000,
-        };
-
-        executeLogin(fallbackAdminUser, `urbanico_jwt_session_${Date.now()}`);
-      } else {
-        setError('Authentication failed. Please verify your credentials.');
-      }
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +52,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
         
         {/* Brand */}
         <img 
-          src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1790679001/logo_eugsi2.jpg" 
+          src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1792405677/finallogo_vgc2kq.jpg" 
           alt="Urbanico Logo" 
           className="w-16 h-16 rounded-[12px] object-cover mb-8 shadow-sm" 
         />
@@ -99,45 +69,35 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
         <div className="w-full">
           <form onSubmit={handleSubmit} className="space-y-6 w-full">
             {error && (
-              <div className="p-4 bg-[#FFF2F2] border border-[#FFD5D5] rounded-[8px] text-[14px] text-[#FF3B30] text-center font-medium">
+              <div className="p-4 bg-[#F5F5F7] rounded-[8px] text-[14px] text-[#FF3B30] text-center font-medium">
                 {error}
               </div>
             )}
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-[#555555] mb-1.5 uppercase tracking-wider">
-                  Admin Email
-                </label>
-                <input
-                  type="email"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="admin@urbanico.in"
-                  className="w-full h-[44px] px-4 bg-white text-[16px] text-[#000000] rounded-[8px] border border-[#D2D2D7] focus:border-[#0071E3] focus:ring-1 focus:ring-[#0071E3] focus:outline-none transition-colors"
-                  required
-                />
-              </div>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Admin Phone"
+                className="w-full h-[44px] px-4 bg-white text-[16px] text-[#000000] rounded-[8px] border border-[#D2D2D7] focus:border-[#0071E3] focus:ring-1 focus:ring-[#0071E3] focus:outline-none transition-colors"
+                required
+              />
 
-              <div>
-                <label className="block text-xs font-semibold text-[#555555] mb-1.5 uppercase tracking-wider">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={authKey}
-                  onChange={(e) => setAuthKey(e.target.value)}
-                  placeholder="Password"
-                  className="w-full h-[44px] px-4 bg-white text-[16px] text-[#000000] rounded-[8px] border border-[#D2D2D7] focus:border-[#0071E3] focus:ring-1 focus:ring-[#0071E3] focus:outline-none transition-colors"
-                  required
-                />
-              </div>
+              <input
+                type="password"
+                value={authKey}
+                onChange={(e) => setAuthKey(e.target.value)}
+                placeholder="OTP / Password"
+                className="w-full h-[44px] px-4 bg-white text-[16px] text-[#000000] rounded-[8px] border border-[#D2D2D7] focus:border-[#0071E3] focus:ring-1 focus:ring-[#0071E3] focus:outline-none transition-colors"
+                required
+              />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-[44px] px-6 py-[12px] bg-[#0071E3] hover:bg-blue-600 active:scale-[0.98] text-white text-[16px] font-medium rounded-[8px] shadow-sm transition-all duration-300 flex items-center justify-center cursor-pointer disabled:opacity-50"
+              className="w-full h-[44px] px-6 py-[12px] bg-[#0071E3] hover:bg-blue-600 active:scale-[0.98] text-white text-[16px] font-medium rounded-[8px] shadow-sm transition-all duration-300 flex items-center justify-center cursor-pointer"
             >
               {isLoading ? 'Authenticating...' : 'Sign In'}
             </button>
