@@ -62,10 +62,26 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
   }, []);
 
   useEffect(() => {
-    loadSystemStatus();
-    const interval = setInterval(loadSystemStatus, 30000); // 30s polling
-    return () => clearInterval(interval);
-  }, [loadSystemStatus]);
+    let ignore = false;
+    const run = () => {
+      Promise.all([fetchHealthApi(), fetchOrdersApi({ status: 'received' })])
+        .then(([health, ordersData]) => {
+          if (!ignore) {
+            setDbConnected(health.database?.isConnected ?? true);
+            setPendingOrdersCount(ordersData.count || 0);
+          }
+        })
+        .catch(() => {
+          if (!ignore) setDbConnected(false);
+        });
+    };
+    run();
+    const interval = setInterval(run, 30000); // 30s polling
+    return () => {
+      ignore = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
@@ -78,7 +94,7 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] flex text-[#1D1D1F]">
+    <div className="min-h-screen bg-[#09090B] flex text-zinc-50">
       {/* Fixed Desktop & Mobile Sidebar */}
       <AdminSidebar
         currentTab={currentTab}
@@ -105,7 +121,7 @@ export const AppShell: React.FC<AppShellProps> = ({ adminUser, onLogout }) => {
             fallback={
               <div className="space-y-6 pt-4">
                 <CardSkeletonGrid count={4} />
-                <div className="h-64 bg-white rounded-[8px] border border-[#E5E5EA] p-6 animate-pulse" />
+                <div className="h-64 bg-[#18181B] rounded-xl border border-[#3F3F46] p-6 animate-pulse" />
               </div>
             }
           >

@@ -44,8 +44,9 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
       if (!quiet) setIsLoading(true);
       const list = await fetchPartnersApi();
       setPartners(list);
-    } catch (err: any) {
-      onShowToast('Error', err.message || 'Failed to fetch partner directory', 'error');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch partner directory';
+      onShowToast('Error', msg, 'error');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -53,8 +54,27 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
   }, [onShowToast]);
 
   useEffect(() => {
-    loadPartners();
-  }, [loadPartners]);
+    let ignore = false;
+    fetchPartnersApi()
+      .then((list) => {
+        if (!ignore) {
+          setPartners(list);
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!ignore) {
+          const msg = err instanceof Error ? err.message : 'Failed to fetch partner directory';
+          onShowToast('Error', msg, 'error');
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [onShowToast]);
 
   const handleManualRefresh = () => {
     setIsRefreshing(true);
@@ -85,9 +105,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
         `${partner.name} is now ${newStatus.toUpperCase()}`,
         newStatus === 'approved' ? 'success' : 'info'
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       setPartners(prev);
-      onShowToast('Update Failed', err.message || 'Could not update KYC', 'error');
+      const msg = err instanceof Error ? err.message : 'Could not update KYC';
+      onShowToast('Update Failed', msg, 'error');
     } finally {
       setUpdatingId(null);
     }
@@ -113,9 +134,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
         `${partner.name} marked as ${status.toUpperCase()}`,
         status === 'approved' ? 'success' : status === 'rejected' ? 'error' : 'info'
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       setPartners(prev);
-      onShowToast('Update Failed', err.message || 'Could not set status', 'error');
+      const msg = err instanceof Error ? err.message : 'Could not set status';
+      onShowToast('Update Failed', msg, 'error');
     } finally {
       setUpdatingId(null);
     }
@@ -167,22 +189,22 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-medium bg-[#E8F5E9] text-[#2E7D32] border border-[#C8E6C9]/60">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#4CAF50]" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             Approved
           </span>
         );
       case 'pending':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-medium bg-[#FFF8EB] text-[#B45309] border border-[#FDE68A]/60">
-            <AlertCircle className="w-3.5 h-3.5 text-[#F59E0B]" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/30">
+            <AlertCircle className="w-3.5 h-3.5 text-yellow-400" />
             Pending Review
           </span>
         );
       case 'rejected':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-medium bg-[#FFEBEE] text-[#C62828] border border-[#FFCDD2]/60">
-            <XCircle className="w-3.5 h-3.5 text-[#EF4444]" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium bg-red-500/10 text-red-400 border border-red-500/30">
+            <XCircle className="w-3.5 h-3.5 text-red-400" />
             Rejected
           </span>
         );
@@ -191,17 +213,17 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
 
   const renderSpecialtyBadge = (specialty: PartnerSpecialty) => {
     const colors: Record<PartnerSpecialty, { bg: string; text: string; border: string }> = {
-      'RCC Masonry': { bg: 'bg-[#FFF8EB]', text: 'text-[#B45309]', border: 'border-[#FDE68A]' },
-      Electrical: { bg: 'bg-[#FEF3C7]', text: 'text-[#92400E]', border: 'border-[#FCD34D]' },
-      Plumbing: { bg: 'bg-[#E0F2FE]', text: 'text-[#0369A1]', border: 'border-[#BAE6FD]' },
-      Driver: { bg: 'bg-[#EBF5FF]', text: 'text-[#0071E3]', border: 'border-[#BFDBFE]' },
-      'Excavator Operator': { bg: 'bg-[#F3E8FF]', text: 'text-[#7E22CE]', border: 'border-[#E9D5FF]' },
-      'Structural Fabrication': { bg: 'bg-[#F1F5F9]', text: 'text-[#334155]', border: 'border-[#CBD5E1]' },
+      'RCC Masonry': { bg: 'bg-yellow-500/10', text: 'text-yellow-400', border: 'border-yellow-500/30' },
+      Electrical: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/30' },
+      Plumbing: { bg: 'bg-sky-500/10', text: 'text-sky-400', border: 'border-sky-500/30' },
+      Driver: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/30' },
+      'Excavator Operator': { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/30' },
+      'Structural Fabrication': { bg: 'bg-zinc-800', text: 'text-zinc-300', border: 'border-zinc-700' },
     };
-    const c = colors[specialty] || { bg: 'bg-[#F5F5F7]', text: 'text-[#555555]', border: 'border-[#E5E5EA]' };
+    const c = colors[specialty] || { bg: 'bg-zinc-800', text: 'text-zinc-400', border: 'border-zinc-700' };
 
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded-[6px] text-[12px] font-medium border ${c.bg} ${c.text} ${c.border}`}>
+      <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[12px] font-medium border ${c.bg} ${c.text} ${c.border}`}>
         {specialty}
       </span>
     );
@@ -232,11 +254,11 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-5 space-y-4">
+      <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-5 space-y-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-[15px] font-semibold text-[#000000]">Trade Partner & Field Technician Registry</h3>
-            <p className="text-[14px] text-[#555555] mt-1">
+            <h3 className="text-[15px] font-semibold text-zinc-50">Trade Partner & Field Technician Registry</h3>
+            <p className="text-[14px] text-zinc-400 mt-1">
               KYC documents, trade licenses, bank account verification, and dispatch credentials.
             </p>
           </div>
@@ -246,10 +268,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
               type="button"
               onClick={handleManualRefresh}
               disabled={isRefreshing}
-              className="flex items-center gap-2 px-3 h-[44px] rounded-[8px] border border-[#E5E5EA] hover:bg-[#F5F5F7] text-[14px] text-[#000000] font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-3.5 h-[44px] rounded-lg border border-zinc-700 hover:bg-zinc-800 text-[14px] text-zinc-200 font-medium transition-colors cursor-pointer"
               title="Refresh partner list"
             >
-              <RefreshCw className={`w-[14px] h-[14px] text-[#0071E3] ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-[14px] h-[14px] text-yellow-400 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">Refresh</span>
             </button>
             <div className="w-full sm:w-[280px]">
@@ -263,8 +285,8 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
         </div>
 
         {/* Minimalist Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E5E5EA]">
-          <span className="text-[13px] text-[#86868B] mr-2">Category:</span>
+        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-800">
+          <span className="text-[13px] text-zinc-400 mr-2">Category:</span>
           {(
             [
               { id: 'all', label: `All Partners (${metrics.total})` },
@@ -278,10 +300,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
               key={filter.id}
               type="button"
               onClick={() => setSelectedFilter(filter.id)}
-              className={`px-3 py-1.5 rounded-[6px] text-[13px] font-medium transition-all duration-200 cursor-pointer ${
+              className={`px-3 py-1.5 rounded-md text-[13px] font-medium transition-all duration-200 cursor-pointer ${
                 selectedFilter === filter.id
-                  ? 'bg-[#0071E3] text-white shadow-sm'
-                  : 'bg-[#F5F5F7] text-[#555555] hover:bg-[#E5E5EA] hover:text-[#000000]'
+                  ? 'bg-yellow-500 text-zinc-950 font-semibold shadow-md shadow-yellow-500/10'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100'
               }`}
             >
               {filter.label}
@@ -291,11 +313,11 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
       </div>
 
       {/* High-Density Partners Table */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] overflow-hidden">
+      <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden shadow-lg">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#E5E5EA] bg-[#F5F5F7] text-[13px] font-medium text-[#555555]">
+              <tr className="border-b border-zinc-800 bg-zinc-950 text-[13px] font-medium text-zinc-400">
                 <th className="p-4 px-6 w-[240px]">Partner Identity</th>
                 <th className="p-4">Contact & Hub</th>
                 <th className="p-4">Trade Specialty</th>
@@ -304,18 +326,18 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                 <th className="p-4 px-6 text-center w-[120px]">Verification</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-zinc-800/80">
               {isLoading ? (
                 <TableSkeletonRows count={5} cols={6} />
               ) : paginatedItems.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-16 text-center">
                     <div className="max-w-sm mx-auto flex flex-col items-center">
-                      <div className="w-16 h-16 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#A1A1A6] mb-4">
-                        <Inbox className="w-8 h-8" />
+                      <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500 mb-4">
+                        <Inbox className="w-8 h-8 text-yellow-500/60" />
                       </div>
-                      <h4 className="text-[18px] font-semibold text-[#000000]">No partners found</h4>
-                      <p className="text-[14px] text-[#86868B] mt-2 mb-6">
+                      <h4 className="text-[18px] font-semibold text-zinc-100">No partners found</h4>
+                      <p className="text-[14px] text-zinc-400 mt-2 mb-6">
                         No partners match your selected criteria.
                       </p>
                       {(searchQuery || selectedFilter !== 'all') && (
@@ -325,7 +347,7 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                             setSearchQuery('');
                             setSelectedFilter('all');
                           }}
-                          className="px-6 py-[12px] h-[44px] rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 transition-all flex items-center justify-center cursor-pointer"
+                          className="px-6 py-2.5 rounded-lg bg-yellow-500 text-zinc-950 text-[14px] font-semibold hover:bg-yellow-400 transition-all flex items-center justify-center cursor-pointer"
                         >
                           Clear Filters
                         </button>
@@ -342,24 +364,23 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                     <tr
                       key={p._id}
                       onClick={() => setSelectedPartner(p)}
-                      className="border-b border-[#E5E5EA] hover:bg-[#F5F5F7]/80 transition-colors duration-200 cursor-pointer"
+                      className="hover:bg-zinc-800/60 transition-colors duration-200 cursor-pointer"
                     >
                       {/* Name & Aadhaar */}
                       <td className="p-4 px-6">
-                        <div className="font-semibold text-[14px] text-[#000000] leading-tight">
+                        <div className="font-semibold text-[14px] text-zinc-100 leading-tight">
                           {p.name}
                         </div>
                         {p.aadhaarNumber && (
                           <div
-                            className="text-[12px] text-[#86868B] font-mono mt-1 flex items-center gap-1.5"
-                            style={{ fontFamily: 'Consolas, Menlo, Monaco, monospace' }}
+                            className="text-[12px] text-zinc-400 font-mono mt-1 flex items-center gap-1.5"
                           >
                             <span>Aadhaar: {p.aadhaarNumber}</span>
                           </div>
                         )}
                         {p.bankVerified && (
-                          <div className="inline-flex items-center gap-1 text-[11px] text-[#2E7D32] bg-[#E8F5E9] px-1.5 py-0.2 rounded mt-1">
-                            <CreditCard className="w-3 h-3 text-[#4CAF50]" />
+                          <div className="inline-flex items-center gap-1 text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded mt-1">
+                            <CreditCard className="w-3 h-3 text-emerald-400" />
                             Bank Penny-Drop Verified
                           </div>
                         )}
@@ -367,18 +388,18 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
 
                       {/* Contact & Zone */}
                       <td className="p-4">
-                        <div className="text-[13px] font-mono text-[#000000] flex items-center gap-1.5">
-                          <Phone className="w-3.5 h-3.5 text-[#86868B]" />
+                        <div className="text-[13px] font-mono text-zinc-200 flex items-center gap-1.5">
+                          <Phone className="w-3.5 h-3.5 text-yellow-500/80" />
                           <a
                             href={`tel:${p.phone}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="hover:text-[#0071E3] transition-colors"
+                            className="hover:text-yellow-400 transition-colors"
                           >
                             +91 {p.phone}
                           </a>
                         </div>
-                        <div className="text-[12px] text-[#64748B] flex items-center gap-1 mt-1 truncate max-w-[200px]">
-                          <MapPin className="w-3 h-3 text-[#0071E3] shrink-0" />
+                        <div className="text-[12px] text-zinc-400 flex items-center gap-1 mt-1 truncate max-w-[200px]">
+                          <MapPin className="w-3 h-3 text-yellow-500 shrink-0" />
                           <span>{p.city}</span>
                         </div>
                       </td>
@@ -387,13 +408,13 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                       <td className="p-4">
                         <div>{renderSpecialtyBadge(p.specialty)}</div>
                         {p.licenseNumber && (
-                          <div className="text-[11px] text-[#86868B] font-mono mt-1 truncate max-w-[240px]" title={p.licenseNumber}>
+                          <div className="text-[11px] text-zinc-400 font-mono mt-1 truncate max-w-[240px]" title={p.licenseNumber}>
                             {p.licenseNumber}
                           </div>
                         )}
                         {p.vehicleNumber && (
-                          <div className="text-[11px] text-[#0071E3] font-mono mt-0.5 flex items-center gap-1">
-                            <Truck className="w-3 h-3" />
+                          <div className="text-[11px] text-yellow-400 font-mono mt-0.5 flex items-center gap-1">
+                            <Truck className="w-3 h-3 text-yellow-400" />
                             <span>{p.vehicleNumber}</span>
                           </div>
                         )}
@@ -401,11 +422,11 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
 
                       {/* Rating & Jobs */}
                       <td className="p-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1 text-[13px] font-semibold text-[#000000]">
-                          <Star className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                        <div className="flex items-center gap-1 text-[13px] font-semibold text-zinc-100">
+                          <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                           <span>{p.rating.toFixed(1)}</span>
                         </div>
-                        <div className="text-[12px] text-[#86868B] mt-0.5 font-mono">
+                        <div className="text-[12px] text-zinc-400 mt-0.5 font-mono">
                           {p.completedJobs} verified jobs
                         </div>
                       </td>
@@ -426,11 +447,11 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                             onClick={(e) => handleToggleKyc(p, e)}
                             title={isApproved ? 'Click to set Pending Review' : 'Click to Approve KYC'}
                             className={`w-[44px] h-[26px] rounded-full p-0.5 transition-colors duration-200 ease-in-out cursor-pointer relative focus:outline-none ${
-                              isApproved ? 'bg-[#34C759]' : 'bg-[#E5E5EA]'
+                              isApproved ? 'bg-emerald-500' : 'bg-zinc-700'
                             } ${isUpdating ? 'opacity-50 cursor-wait' : ''}`}
                           >
                             <span
-                              className={`block w-[22px] h-[22px] bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                              className={`block w-[22px] h-[22px] bg-zinc-950 rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
                                 isApproved ? 'translate-x-[18px]' : 'translate-x-0'
                               }`}
                             />
@@ -446,10 +467,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
         </div>
 
         {/* Pagination Footer */}
-        <div className="px-6 py-4 border-t border-[#E5E5EA] flex items-center justify-between text-[13px] text-[#555555]">
+        <div className="px-6 py-4 border-t border-zinc-800 flex items-center justify-between text-[13px] text-zinc-400 bg-zinc-900">
           <div>
-            Showing <span className="font-semibold text-[#000000]">{paginatedItems.length}</span> of{' '}
-            <span className="font-semibold text-[#000000]">{totalItems}</span> partners
+            Showing <span className="font-semibold text-zinc-100">{paginatedItems.length}</span> of{' '}
+            <span className="font-semibold text-zinc-100">{totalItems}</span> partners
           </div>
           <div className="flex items-center gap-3">
             <span className="mr-2">
@@ -460,7 +481,7 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                 type="button"
                 onClick={prevPage}
                 disabled={!hasPrevPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2 rounded-lg border border-zinc-700 text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Previous page"
               >
                 <ChevronLeft className="w-[16px] h-[16px]" />
@@ -469,7 +490,7 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                 type="button"
                 onClick={nextPage}
                 disabled={!hasNextPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2 rounded-lg border border-zinc-700 text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Next page"
               >
                 <ChevronRight className="w-[16px] h-[16px]" />
@@ -490,90 +511,88 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
         >
           <div className="space-y-6">
             {/* Header Identity Card */}
-            <div className="bg-[#F5F5F7] rounded-[8px] p-5 border border-[#E5E5EA] flex items-start justify-between gap-4">
+            <div className="bg-zinc-950 rounded-lg p-5 border border-zinc-800 flex items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-[18px] font-bold text-[#000000]">{selectedPartner.name}</h3>
+                  <h3 className="text-[18px] font-bold text-zinc-50">{selectedPartner.name}</h3>
                   {renderSpecialtyBadge(selectedPartner.specialty)}
                 </div>
-                <div className="flex items-center gap-3 text-[13px] text-[#555555] mt-1.5">
+                <div className="flex items-center gap-3 text-[13px] text-zinc-400 mt-1.5">
                   <span className="flex items-center gap-1 font-mono">
-                    <Phone className="w-3.5 h-3.5 text-[#86868B]" />
+                    <Phone className="w-3.5 h-3.5 text-yellow-500/80" />
                     +91 {selectedPartner.phone}
                   </span>
                   {selectedPartner.email && (
                     <span className="flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5 text-[#86868B]" />
+                      <Mail className="w-3.5 h-3.5 text-zinc-500" />
                       {selectedPartner.email}
                     </span>
                   )}
                 </div>
-                <div className="text-[13px] text-[#86868B] flex items-center gap-1 mt-1">
-                  <MapPin className="w-3.5 h-3.5 text-[#0071E3]" />
+                <div className="text-[13px] text-zinc-400 flex items-center gap-1 mt-1">
+                  <MapPin className="w-3.5 h-3.5 text-yellow-500" />
                   <span>{selectedPartner.city}</span>
                 </div>
               </div>
 
               <div className="text-right shrink-0">
-                <div className="flex items-center justify-end gap-1 text-[15px] font-bold text-[#000000]">
-                  <Star className="w-4 h-4 fill-[#F59E0B] text-[#F59E0B]" />
+                <div className="flex items-center justify-end gap-1 text-[15px] font-bold text-zinc-100">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   <span>{selectedPartner.rating.toFixed(1)}</span>
                 </div>
-                <div className="text-[12px] text-[#86868B] mt-0.5">
+                <div className="text-[12px] text-zinc-400 mt-0.5">
                   {selectedPartner.completedJobs} Site Jobs
                 </div>
               </div>
             </div>
 
             {/* KYC & Credential Details */}
-            <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-5 space-y-4">
-              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-[#86868B] block">
+            <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-5 space-y-4">
+              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-zinc-400 block">
                 Verification Credentials
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px]">
-                <div className="p-3 bg-[#F5F5F7] rounded-[8px] border border-[#E5E5EA]">
-                  <span className="text-[11px] text-[#86868B] block mb-1">Aadhaar Card (UIDAI)</span>
+                <div className="p-3 bg-zinc-800 rounded-lg border border-zinc-700">
+                  <span className="text-[11px] text-zinc-400 block mb-1">Aadhaar Card (UIDAI)</span>
                   <div
-                    className="font-mono font-semibold text-[#000000] text-[14px]"
-                    style={{ fontFamily: 'Consolas, Menlo, Monaco, monospace' }}
+                    className="font-mono font-semibold text-zinc-100 text-[14px]"
                   >
                     {selectedPartner.aadhaarNumber || 'Not Submitted'}
                   </div>
                 </div>
 
-                <div className="p-3 bg-[#F5F5F7] rounded-[8px] border border-[#E5E5EA]">
-                  <span className="text-[11px] text-[#86868B] block mb-1">Trade Certification / License</span>
-                  <div className="font-semibold text-[#000000] truncate">
+                <div className="p-3 bg-zinc-800 rounded-lg border border-zinc-700">
+                  <span className="text-[11px] text-zinc-400 block mb-1">Trade Certification / License</span>
+                  <div className="font-semibold text-zinc-100 truncate">
                     {selectedPartner.licenseNumber || 'Under Verification'}
                   </div>
                 </div>
               </div>
 
               {selectedPartner.vehicleNumber && (
-                <div className="p-3 bg-[#F5F5F7] rounded-[8px] border border-[#E5E5EA] flex items-center justify-between">
+                <div className="p-3 bg-zinc-800 rounded-lg border border-zinc-700 flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] text-[#86868B] block">Vehicle Plate Number (Commercial HMV)</span>
+                    <span className="text-[11px] text-zinc-400 block">Vehicle Plate Number (Commercial HMV)</span>
                     <span
-                      className="font-mono font-bold text-[#0071E3] text-[15px]"
-                      style={{ fontFamily: 'Consolas, Menlo, Monaco, monospace' }}
+                      className="font-mono font-bold text-yellow-400 text-[15px]"
                     >
                       {selectedPartner.vehicleNumber}
                     </span>
                   </div>
-                  <span className="text-[12px] px-2.5 py-1 rounded bg-[#EBF5FF] text-[#0071E3] font-medium">
+                  <span className="text-[12px] px-2.5 py-1 rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 font-medium">
                     Fleet Assigned
                   </span>
                 </div>
               )}
 
               <div className="flex items-center justify-between pt-2 text-[13px]">
-                <span className="text-[#555555]">Bank Account Penny-Drop Test:</span>
+                <span className="text-zinc-400">Bank Account Penny-Drop Test:</span>
                 <span
                   className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[12px] font-medium ${
                     selectedPartner.bankVerified
-                      ? 'bg-[#E8F5E9] text-[#2E7D32]'
-                      : 'bg-[#FFF8EB] text-[#B45309]'
+                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                      : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30'
                   }`}
                 >
                   {selectedPartner.bankVerified ? 'Verified & Linked' : 'Pending Penny-Drop Verification'}
@@ -582,8 +601,8 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
             </div>
 
             {/* KYC Status Decision Control */}
-            <div className="bg-[#F5F5F7] rounded-[8px] p-5 border border-[#E5E5EA] space-y-3">
-              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-[#86868B] block">
+            <div className="bg-zinc-950 rounded-lg p-5 border border-zinc-800 space-y-3">
+              <span className="text-[12px] font-semibold tracking-[0.05em] uppercase text-zinc-400 block">
                 Administrative Verification Decision
               </span>
               <div className="flex flex-col sm:flex-row gap-2.5">
@@ -591,10 +610,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                   type="button"
                   onClick={() => handleSetExplicitStatus(selectedPartner._id, 'approved')}
                   disabled={updatingId === selectedPartner._id}
-                  className={`flex-1 py-2.5 px-4 rounded-[8px] text-[14px] font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-[14px] font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     selectedPartner.kycStatus === 'approved'
-                      ? 'bg-[#34C759] text-white shadow-sm'
-                      : 'bg-white border border-[#E5E5EA] text-[#2E7D32] hover:bg-[#E8F5E9]'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-zinc-900 border border-zinc-700 text-emerald-400 hover:bg-emerald-500/10'
                   }`}
                 >
                   <CheckCircle2 className="w-4 h-4" />
@@ -605,10 +624,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                   type="button"
                   onClick={() => handleSetExplicitStatus(selectedPartner._id, 'pending')}
                   disabled={updatingId === selectedPartner._id}
-                  className={`flex-1 py-2.5 px-4 rounded-[8px] text-[14px] font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-[14px] font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     selectedPartner.kycStatus === 'pending'
-                      ? 'bg-[#F59E0B] text-white shadow-sm'
-                      : 'bg-white border border-[#E5E5EA] text-[#B45309] hover:bg-[#FFF8EB]'
+                      ? 'bg-yellow-500 text-zinc-950 font-semibold shadow-sm'
+                      : 'bg-zinc-900 border border-zinc-700 text-yellow-400 hover:bg-yellow-500/10'
                   }`}
                 >
                   <AlertCircle className="w-4 h-4" />
@@ -619,10 +638,10 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
                   type="button"
                   onClick={() => handleSetExplicitStatus(selectedPartner._id, 'rejected')}
                   disabled={updatingId === selectedPartner._id}
-                  className={`flex-1 py-2.5 px-4 rounded-[8px] text-[14px] font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-[14px] font-medium flex items-center justify-center gap-2 transition-all cursor-pointer ${
                     selectedPartner.kycStatus === 'rejected'
-                      ? 'bg-[#EF4444] text-white shadow-sm'
-                      : 'bg-white border border-[#E5E5EA] text-[#C62828] hover:bg-[#FFEBEE]'
+                      ? 'bg-red-600 text-white shadow-sm'
+                      : 'bg-zinc-900 border border-zinc-700 text-red-400 hover:bg-red-500/10'
                   }`}
                 >
                   <XCircle className="w-4 h-4" />
@@ -636,7 +655,7 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onShowToast }) => {
               <button
                 type="button"
                 onClick={() => setSelectedPartner(null)}
-                className="py-2.5 px-8 bg-[#0071E3] text-white text-[14px] font-medium rounded-[8px] hover:bg-blue-600 transition-all cursor-pointer"
+                className="py-2.5 px-8 bg-yellow-500 text-zinc-950 text-[14px] font-semibold rounded-lg hover:bg-yellow-400 transition-all cursor-pointer shadow-md shadow-yellow-500/10"
               >
                 Done
               </button>

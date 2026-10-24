@@ -10,6 +10,7 @@ import {
   Database,
   ShieldCheck,
   UserCheck,
+  HardHat,
 } from 'lucide-react';
 import { IAdminUser } from '../../types';
 
@@ -36,7 +37,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   pendingOrdersCount = 0,
   dbConnected = true,
 }) => {
-  const navItems: { id: NavigationTab; label: string; icon: any; count?: number }[] = [
+  const navItems: { id: NavigationTab; label: string; icon: React.ElementType; count?: number }[] = [
     {
       id: 'orders',
       label: 'Orders Queue',
@@ -61,59 +62,60 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       {/* Mobile Backdrop */}
       {isOpenMobile && (
         <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-md z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 lg:hidden transition-opacity duration-300"
           onClick={onCloseMobile}
         />
       )}
 
       {/* Sidebar container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 w-[260px] bg-white border-r border-[#E5E5EA] flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-40 w-[260px] bg-[#18181B] border-r border-[#3F3F46] flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand header */}
-        <div className="h-[64px] px-6 flex items-center justify-between mt-2">
+        <div className="h-[64px] px-6 flex items-center justify-between border-b border-[#3F3F46]">
           <div className="flex items-center gap-3">
-            <img 
-              src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1792405677/finallogo_vgc2kq.jpg" 
-              alt="Urbanico Logo" 
-              className="w-8 h-8 rounded-[8px] object-cover" 
-            />
+            <div className="w-8 h-8 rounded-lg bg-yellow-500 flex items-center justify-center text-zinc-950 font-bold shadow-md shadow-yellow-500/10">
+              <HardHat className="w-5 h-5 text-zinc-950" />
+            </div>
             <div>
-              <span className="font-bold text-[18px] tracking-[-0.02em] text-[#000000] block leading-tight">
+              <span className="font-bold text-lg tracking-tight text-zinc-50 block leading-tight">
                 Urbanico
+              </span>
+              <span className="text-[11px] text-zinc-400 font-medium tracking-wide uppercase">
+                Admin Portal
               </span>
             </div>
           </div>
           <button
             type="button"
             onClick={onCloseMobile}
-            className="lg:hidden text-[#86868B] hover:text-[#000000] p-1 rounded-lg"
+            className="lg:hidden text-zinc-400 hover:text-zinc-100 p-1 rounded-lg"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Single Admin Identity Banner */}
-        <div className="px-6 py-4 mt-2">
+        <div className="px-5 py-4 border-b border-[#3F3F46] bg-[#27272A]/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#F5F5F7] text-[#000000] flex items-center justify-center font-medium text-[14px]">
+            <div className="w-9 h-9 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 flex items-center justify-center font-bold text-xs shrink-0">
               SA
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-[14px] font-semibold text-[#000000] truncate leading-tight">
+              <div className="text-xs font-semibold text-zinc-100 truncate leading-tight">
                 {adminUser.name || 'Super Admin'}
               </div>
-              <div className="text-[12px] text-[#86868B] truncate mt-0.5">
-                Admin
+              <div className="text-[11px] text-zinc-400 truncate mt-0.5">
+                {adminUser.email || 'admin@urbanico.in'}
               </div>
             </div>
           </div>
         </div>
 
         {/* Navigation items */}
-        <nav className="flex-1 px-4 mt-2 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.id;
@@ -122,26 +124,26 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 key={item.id}
                 type="button"
                 onClick={() => handleSelect(item.id)}
-                className={`w-full flex items-center justify-between px-3 h-[44px] rounded-[8px] text-[14px] transition-all duration-300 ${
+                className={`w-full flex items-center justify-between px-3 h-11 text-sm transition-all duration-200 rounded-r-lg ${
                   isActive
-                    ? 'bg-[#0071E3] text-white font-medium'
-                    : 'text-[#1D1D1F] hover:bg-[#F5F5F7] active:scale-[0.98]'
+                    ? 'bg-yellow-500 text-zinc-950 font-semibold border-l-4 border-yellow-500 shadow-sm'
+                    : 'text-zinc-300 hover:bg-[#27272A] hover:text-zinc-50'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
-                    className={`w-[18px] h-[18px] ${
-                      isActive ? 'text-white' : 'text-[#555555]'
+                    className={`w-4 h-4 ${
+                      isActive ? 'text-zinc-950' : 'text-zinc-400'
                     }`}
                   />
                   <span>{item.label}</span>
                 </div>
                 {item.count !== undefined && (
                   <span
-                    className={`text-[12px] px-2 py-0.5 rounded-full font-medium ${
+                    className={`text-xs px-2 py-0.5 rounded-full font-bold ${
                       isActive
-                        ? 'bg-white text-[#0071E3]'
-                        : 'bg-[#FF3B30] text-white'
+                        ? 'bg-zinc-950 text-yellow-400'
+                        : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                     }`}
                   >
                     {item.count}
@@ -153,19 +155,19 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </nav>
 
         {/* Live Backend Connection Indicator & Logout */}
-        <div className="p-4 space-y-2">
-          <div className="px-3 py-2 rounded-[8px] flex items-center justify-between text-[12px]">
-            <div className="flex items-center gap-2 text-[#86868B]">
-              <Database className="w-[14px] h-[14px]" />
-              <span>Status</span>
+        <div className="p-4 border-t border-[#3F3F46] space-y-2 bg-[#18181B]">
+          <div className="px-3 py-2 rounded-lg bg-[#27272A]/60 flex items-center justify-between text-xs border border-[#3F3F46]">
+            <div className="flex items-center gap-2 text-zinc-400">
+              <Database className="w-3.5 h-3.5 text-zinc-400" />
+              <span>API Gateway</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span
                 className={`w-2 h-2 rounded-full ${
-                  dbConnected ? 'bg-[#34C759]' : 'bg-[#FF3B30]'
+                  dbConnected ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : 'bg-red-400'
                 }`}
               />
-              <span className="text-[12px] text-[#555555]">
+              <span className="text-xs text-zinc-300 font-medium">
                 {dbConnected ? 'Online' : 'Offline'}
               </span>
             </div>
@@ -174,9 +176,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           <button
             type="button"
             onClick={onLogout}
-            className="w-full flex items-center gap-3 px-3 h-[44px] text-[14px] text-[#FF3B30] hover:bg-[#F5F5F7] rounded-[8px] transition-colors"
+            className="w-full flex items-center gap-3 px-3 h-10 text-xs text-red-400 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/20 cursor-pointer font-medium"
           >
-            <LogOut className="w-[18px] h-[18px]" />
+            <LogOut className="w-4 h-4 text-red-400" />
             <span>Sign Out</span>
           </button>
         </div>
@@ -184,3 +186,4 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     </>
   );
 };
+

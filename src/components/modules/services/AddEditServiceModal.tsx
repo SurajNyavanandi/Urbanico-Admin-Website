@@ -7,7 +7,7 @@ interface AddEditServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
   service: IService | null;
-  onSave: (data: Partial<IService>, isEdit: boolean, id?: string) => Promise<any>;
+  onSave: (data: Partial<IService>, isEdit: boolean, id?: string) => Promise<unknown>;
   onShowToast: (title: string, message?: string, type?: 'success' | 'error' | 'info') => void;
 }
 
@@ -39,22 +39,24 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setImgPreviewError(false);
-    if (service) {
-      setName(service.name || '');
-      setSubtitle(service.subtitle || '');
-      setRate(service.rate || '');
-      setDescription(service.description || '');
-      setTag(service.tag || 'SERVICES');
-      setImage(service.image || '');
-    } else {
-      setName('');
-      setSubtitle('');
-      setRate('₹99 Demo Visit');
-      setDescription('');
-      setTag('SERVICES');
-      setImage('https://res.cloudinary.com/dfr0zghtc/image/upload/v1786705284/mason_nxpwh5.jpg');
-    }
+    if (!isOpen) return;
+    queueMicrotask(() => {
+      if (service) {
+        setName(service.name || '');
+        setSubtitle(service.subtitle || '');
+        setRate(service.rate || '');
+        setDescription(service.description || '');
+        setTag(service.tag || 'SERVICES');
+        setImage(service.image || '');
+      } else {
+        setName('');
+        setSubtitle('');
+        setRate('₹99 Demo Visit');
+        setDescription('');
+        setTag('SERVICES');
+        setImage('https://res.cloudinary.com/dfr0zghtc/image/upload/v1786705284/mason_nxpwh5.jpg');
+      }
+    });
   }, [service, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,8 +91,9 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
         'success'
       );
       onClose();
-    } catch (err: any) {
-      onShowToast('Save Error', err.message || 'Failed to save service', 'error');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to save service';
+      onShowToast('Save Error', msg, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +109,7 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+          <label className="block text-xs font-semibold text-zinc-400 uppercase mb-1">
             Trade Service Name *
           </label>
           <input
@@ -114,16 +117,16 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Mason & Bricklaying, Structural Welder"
-            className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+            className="w-full bg-zinc-800 text-zinc-100 text-sm px-3.5 py-2.5 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all placeholder-zinc-500"
             required
           />
         </div>
 
         {/* Service Image URL with Live Preview & Quick Presets */}
-        <div className="bg-[#F9F9FB] rounded-xl p-3 border border-[#E5E5EA]">
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs font-semibold text-[#1D1D1F] uppercase flex items-center gap-1.5">
-              <ImageIcon className="w-3.5 h-3.5 text-[#007AFF]" />
+        <div className="bg-zinc-800/60 rounded-xl p-3.5 border border-zinc-700/80">
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs font-semibold text-zinc-300 uppercase flex items-center gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5 text-yellow-400" />
               Trade Image URL
             </label>
             {image && (
@@ -133,7 +136,7 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
                   setImage('');
                   setImgPreviewError(false);
                 }}
-                className="text-[11px] text-[#86868B] hover:text-[#FF3B30] flex items-center gap-0.5"
+                className="text-[11px] text-zinc-400 hover:text-red-400 flex items-center gap-0.5 transition-colors cursor-pointer"
               >
                 <X className="w-3 h-3" /> Clear Image
               </button>
@@ -141,7 +144,7 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="w-16 h-16 rounded-xl overflow-hidden bg-white border border-[#E5E5EA] shrink-0 flex items-center justify-center relative shadow-sm">
+            <div className="w-16 h-16 rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700 shrink-0 flex items-center justify-center relative shadow-inner">
               {image && !imgPreviewError ? (
                 <img
                   src={image}
@@ -151,9 +154,9 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center text-[#86868B] p-1 text-center">
-                  <Wrench className="w-5 h-5 mb-0.5" />
-                  <span className="text-[9px] leading-tight">No Image</span>
+                <div className="flex flex-col items-center justify-center text-zinc-500 p-1 text-center">
+                  <Wrench className="w-5 h-5 mb-0.5 text-yellow-500/60" />
+                  <span className="text-[9px] leading-tight text-zinc-400">No Image</span>
                 </div>
               )}
             </div>
@@ -166,14 +169,14 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
                   setImage(e.target.value);
                   setImgPreviewError(false);
                 }}
-                placeholder="https://... service photo URL (Cloudinary, Unsplash)"
-                className="w-full bg-white text-xs px-3 py-2 rounded-lg border border-[#E5E5EA] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 font-mono"
+                placeholder="https://... service photo URL"
+                className="w-full bg-zinc-800 text-zinc-100 text-xs px-3 py-2 rounded-lg border border-zinc-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 font-mono placeholder-zinc-500"
               />
 
               {/* Quick Image Presets */}
-              <div className="mt-2">
-                <span className="text-[10px] text-[#86868B] mb-1 flex items-center gap-1 font-medium">
-                  <Sparkles className="w-2.5 h-2.5 text-[#007AFF]" /> Quick Trade Presets:
+              <div className="mt-2.5">
+                <span className="text-[10px] text-zinc-400 mb-1 flex items-center gap-1 font-medium">
+                  <Sparkles className="w-2.5 h-2.5 text-yellow-400" /> Quick Trade Presets:
                 </span>
                 <div className="flex flex-wrap gap-1">
                   {SERVICE_IMAGE_PRESETS.map((preset) => (
@@ -184,7 +187,7 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
                         setImage(preset.url);
                         setImgPreviewError(false);
                       }}
-                      className="px-2 py-0.5 rounded text-[10px] bg-white text-[#555558] hover:text-[#007AFF] hover:border-[#007AFF] border border-[#E5E5EA] transition-colors"
+                      className="px-2 py-0.5 rounded text-[10px] bg-zinc-800 text-zinc-300 hover:text-yellow-400 hover:border-yellow-500/50 border border-zinc-700 transition-colors cursor-pointer"
                     >
                       {preset.label}
                     </button>
@@ -197,7 +200,7 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-semibold text-zinc-400 uppercase mb-1">
               Subtitle / Specialization
             </label>
             <input
@@ -205,12 +208,12 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
               value={subtitle}
               onChange={(e) => setSubtitle(e.target.value)}
               placeholder="e.g. Tile & Brickwork Masters"
-              className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-zinc-800 text-zinc-100 text-sm px-3.5 py-2.5 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all placeholder-zinc-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-semibold text-zinc-400 uppercase mb-1">
               Contractor Rate *
             </label>
             <input
@@ -218,14 +221,14 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
               value={rate}
               onChange={(e) => setRate(e.target.value)}
               placeholder="e.g. ₹99 Demo Visit, ₹750/Day"
-              className="w-full bg-[#F5F5F7] text-sm font-mono px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-zinc-800 text-zinc-100 text-sm font-mono px-3.5 py-2.5 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all placeholder-zinc-500"
               required
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+          <label className="block text-xs font-semibold text-zinc-400 uppercase mb-1">
             Tag Badge
           </label>
           <input
@@ -233,12 +236,12 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
             value={tag}
             onChange={(e) => setTag(e.target.value)}
             placeholder="SERVICES, FABRICATION, ELECTRICAL"
-            className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+            className="w-full bg-zinc-800 text-zinc-100 text-sm px-3.5 py-2.5 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all placeholder-zinc-500"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+          <label className="block text-xs font-semibold text-zinc-400 uppercase mb-1">
             Scope Description
           </label>
           <textarea
@@ -246,23 +249,23 @@ export const AddEditServiceModal: React.FC<AddEditServiceModalProps> = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the tasks, tools provided, and site preparation required..."
-            className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+            className="w-full bg-zinc-800 text-zinc-100 text-sm px-3.5 py-2 rounded-xl border border-zinc-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all placeholder-zinc-500"
           />
         </div>
 
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-[#E5E5EA]">
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-zinc-800">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="w-full sm:w-auto py-[10px] px-6 rounded-[8px] border border-[#E5E5EA] text-[14px] font-medium text-[#000000] hover:bg-[#F5F5F7] transition-all"
+            className="w-full sm:w-auto py-2.5 px-6 rounded-lg border border-zinc-700 text-sm font-medium text-zinc-300 hover:bg-zinc-800 transition-all cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto py-[10px] px-6 rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 active:scale-[0.98] transition-all"
+            className="w-full sm:w-auto py-2.5 px-6 rounded-lg bg-yellow-500 text-zinc-950 text-sm font-semibold hover:bg-yellow-400 active:scale-[0.98] transition-all cursor-pointer shadow-md shadow-yellow-500/10"
           >
             {isLoading ? 'Saving...' : isEdit ? 'Update Service' : 'Create Service'}
           </button>

@@ -13,16 +13,32 @@ export function useCategories() {
       setError(null);
       const list = await fetchCategoriesApi();
       setCategories(list);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch categories');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch categories');
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
+    let ignore = false;
+    fetchCategoriesApi()
+      .then((list) => {
+        if (!ignore) {
+          setCategories(list);
+          setIsLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!ignore) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch categories');
+          setIsLoading(false);
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const updateCategory = async (id: string, updates: Partial<ICategory>) => {
     const prev = [...categories];

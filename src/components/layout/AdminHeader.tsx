@@ -49,21 +49,21 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   const meta = titles[currentTab] || { title: 'Dashboard', subtitle: 'Overview' };
 
   return (
-    <header className="h-[64px] bg-white/80 backdrop-blur-md border-b border-[#E5E5EA] sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between">
+    <header className="h-[64px] bg-[#18181B]/90 backdrop-blur-md border-b border-[#3F3F46] sticky top-0 z-30 px-4 sm:px-6 flex items-center justify-between text-zinc-50">
       <div className="flex items-center gap-3 sm:gap-4">
         <button
           type="button"
           onClick={onOpenMobileSidebar}
-          className="lg:hidden p-2 -ml-2 rounded-[8px] text-[#555555] hover:text-[#000000] hover:bg-[#F5F5F7] transition-colors"
+          className="lg:hidden p-2 -ml-2 rounded-lg text-zinc-400 hover:text-zinc-50 hover:bg-[#27272A] transition-colors"
           aria-label="Open sidebar navigation"
         >
-          <Menu className="w-[20px] h-[20px]" />
+          <Menu className="w-5 h-5" />
         </button>
         <div>
-          <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#000000] tracking-[-0.02em] leading-tight">
+          <h2 className="text-base sm:text-lg font-bold text-zinc-50 tracking-tight leading-tight">
             {meta.title}
           </h2>
-          <p className="text-[13px] text-[#555555] hidden sm:block mt-0.5">
+          <p className="text-xs text-zinc-400 hidden sm:block mt-0.5">
             {meta.subtitle}
           </p>
         </div>
@@ -75,20 +75,21 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           type="button"
           onClick={onRefresh}
           disabled={isRefreshing}
-          className="flex items-center gap-2 px-4 h-[32px] rounded-[8px] bg-[#F5F5F7] hover:bg-[#E5E5EA] text-[13px] font-medium text-[#000000] active:scale-[0.98] transition-all"
+          className="flex items-center gap-2 px-3.5 h-8 rounded-lg bg-[#27272A] hover:bg-zinc-700 border border-[#3F3F46] text-xs font-semibold text-zinc-100 active:scale-[0.98] transition-all cursor-pointer"
           title="Synchronize live data with Express backend"
         >
-          <RefreshCw className={`w-[14px] h-[14px] text-[#0071E3] ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 text-yellow-400 ${isRefreshing ? 'animate-spin' : ''}`} />
           <span className="hidden sm:inline">Sync Live</span>
         </button>
 
         {/* Master Admin Indicator */}
-        <div className="hidden md:flex items-center gap-2 pl-4 border-l border-[#E5E5EA] text-[13px]">
-          <span className="w-2 h-2 rounded-full bg-[#34C759]" />
-          <span className="text-[#555555]">Single Admin Mode:</span>
-          <span className="font-medium text-[#000000]">9666635009</span>
+        <div className="hidden md:flex items-center gap-2 pl-4 border-l border-[#3F3F46] text-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+          <span className="text-zinc-400">Master Session:</span>
+          <span className="font-semibold text-yellow-400">9666635009</span>
         </div>
       </div>
     </header>
   );
 };
+

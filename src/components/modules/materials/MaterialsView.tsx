@@ -118,8 +118,9 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
       await removeMaterial(deleteTarget.id);
       onShowToast('Product Deleted', `${deleteTarget.name} has been removed from catalog`, 'info');
       setDeleteTarget(null);
-    } catch (err: any) {
-      onShowToast('Delete Error', err.message || 'Failed to delete product', 'error');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete product';
+      onShowToast('Delete Error', msg, 'error');
     } finally {
       setIsDeleting(false);
     }
@@ -209,7 +210,7 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
       </div>
 
       {/* Action Controls: Category Tabs, Subcategories, Search, Export CSV & Add Product */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-4 space-y-4">
+      <div className="bg-[#18181B] rounded-xl border border-[#3F3F46] p-4 space-y-4 shadow-md">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           {/* Dynamic Category Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
@@ -220,10 +221,10 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-full text-[14px] font-medium whitespace-nowrap transition-all duration-300 ${
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-[#0071E3] text-white shadow-sm'
-                      : 'bg-[#F5F5F7] text-[#555555] hover:text-[#000000] hover:bg-[#E5E5EA]'
+                      ? 'bg-yellow-500 text-zinc-950 shadow-md shadow-yellow-500/10'
+                      : 'bg-[#27272A] text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 border border-[#3F3F46]'
                   }`}
                 >
                   {cat.label}
@@ -245,27 +246,27 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
               <button
                 type="button"
                 onClick={handleExportCsv}
-                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-3.5 h-[44px] rounded-[8px] border border-[#E5E5EA] bg-white hover:bg-[#F5F5F7] text-[#1D1D1F] text-[13px] font-medium active:scale-[0.98] transition-all cursor-pointer"
+                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-3.5 h-10 rounded-lg border border-[#3F3F46] bg-[#27272A] hover:bg-zinc-700 text-zinc-100 text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer"
                 title="Export filtered materials list as CSV"
               >
-                <Download className="w-[14px] h-[14px] text-[#555555]" />
+                <Download className="w-3.5 h-3.5 text-yellow-400" />
                 <span className="hidden sm:inline">Export CSV</span>
               </button>
               <button
                 type="button"
                 onClick={() => setIsDetailsModalOpen(true)}
-                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-4 h-[44px] rounded-[8px] bg-[#F5F5F7] hover:bg-[#E5E5EA] text-[#000000] text-[14px] font-medium transition-all cursor-pointer"
-                title="View how many sub-categories each material contains & services count"
+                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-3.5 h-10 rounded-lg bg-[#27272A] hover:bg-zinc-700 border border-[#3F3F46] text-zinc-100 text-xs font-semibold transition-all cursor-pointer"
+                title="View sub-category counts and trade service listings"
               >
-                <Info className="w-[16px] h-[16px] text-[#0071E3]" />
-                <span className="hidden sm:inline">Catalog Details</span>
+                <Info className="w-4 h-4 text-yellow-400" />
+                <span className="hidden sm:inline">Details</span>
               </button>
               <button
                 type="button"
                 onClick={handleOpenAdd}
-                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-6 h-[44px] rounded-[8px] bg-[#0071E3] hover:bg-blue-600 text-white text-[14px] font-medium shadow-sm active:scale-[0.98] transition-all cursor-pointer"
+                className="flex-1 sm:flex-none shrink-0 flex items-center justify-center gap-2 px-5 h-10 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-zinc-950 text-xs font-bold shadow-md active:scale-[0.98] transition-all cursor-pointer"
               >
-                <Plus className="w-[16px] h-[16px]" />
+                <Plus className="w-4 h-4 text-zinc-950" />
                 <span>Add Product</span>
               </button>
             </div>
@@ -274,17 +275,17 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
 
         {/* Dynamic Sub-Category Pills */}
         {availableSubCategories.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pt-3 border-t border-[#F5F5F7] scrollbar-none">
-            <span className="text-[12px] font-semibold text-[#86868B] whitespace-nowrap uppercase tracking-[0.05em] mr-2">
+          <div className="flex items-center gap-2 overflow-x-auto pt-3 border-t border-[#3F3F46] scrollbar-none">
+            <span className="text-xs font-bold text-zinc-400 whitespace-nowrap uppercase tracking-wider mr-2">
               Sub-Categories:
             </span>
             <button
               type="button"
               onClick={() => setSelectedSubCategory('all')}
-              className={`px-3 py-1.5 rounded-[6px] text-[13px] font-medium whitespace-nowrap transition-all ${
+              className={`px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedSubCategory === 'all'
-                  ? 'bg-[#000000] text-white shadow-sm'
-                  : 'bg-[#F5F5F7] text-[#555555] hover:text-[#000000] hover:bg-[#E5E5EA]'
+                  ? 'bg-yellow-500 text-zinc-950'
+                  : 'bg-[#27272A] text-zinc-400 hover:text-zinc-100 border border-[#3F3F46]'
               }`}
             >
               All ({availableSubCategories.length})
@@ -296,10 +297,10 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
                   key={sub}
                   type="button"
                   onClick={() => setSelectedSubCategory(isSubActive ? 'all' : sub)}
-                  className={`px-3 py-1.5 rounded-[6px] text-[13px] font-medium whitespace-nowrap transition-all ${
+                  className={`px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                     isSubActive
-                      ? 'bg-[#0071E3] text-white shadow-sm'
-                      : 'bg-[#F5F5F7] text-[#555555] hover:text-[#000000] hover:bg-[#E5E5EA]'
+                      ? 'bg-yellow-500 text-zinc-950'
+                      : 'bg-[#27272A] text-zinc-400 hover:text-zinc-100 border border-[#3F3F46]'
                   }`}
                 >
                   {sub}
@@ -311,11 +312,11 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
       </div>
 
       {/* Materials Table */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] overflow-hidden">
+      <div className="bg-[#18181B] rounded-xl border border-[#3F3F46] overflow-hidden shadow-lg">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#E5E5EA] bg-[#F5F5F7] text-[13px] font-medium text-[#555555]">
+              <tr className="border-b border-[#3F3F46] bg-[#27272A] text-xs font-bold uppercase tracking-wider text-zinc-400">
                 <th className="p-4 px-6">Material SKU & Brand</th>
                 <th className="p-4">Origin Yard & GST</th>
                 <th className="p-4">Live Unit Price (₹)</th>
@@ -324,18 +325,18 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
                 <th className="p-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#3F3F46]">
               {isLoading ? (
                 <TableSkeletonRows count={6} cols={6} />
               ) : paginatedItems.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-16 text-center">
                     <div className="max-w-sm mx-auto flex flex-col items-center">
-                      <div className="w-16 h-16 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#A1A1A6] mb-4">
-                        <Inbox className="w-8 h-8" />
+                      <div className="w-14 h-14 rounded-xl bg-[#27272A] border border-[#3F3F46] flex items-center justify-center text-zinc-500 mb-4">
+                        <Inbox className="w-7 h-7" />
                       </div>
-                      <h4 className="text-[18px] font-semibold text-[#000000]">No materials matched</h4>
-                      <p className="text-[14px] text-[#86868B] mt-2 mb-6">
+                      <h4 className="text-base font-bold text-zinc-100">No materials matched</h4>
+                      <p className="text-xs text-zinc-400 mt-2 mb-6">
                         {searchQuery || selectedCategory !== 'all'
                           ? 'Try clearing the search query or select another category.'
                           : 'Click Add Product above to register your first construction material.'}
@@ -347,7 +348,7 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
                             setSelectedCategory('all');
                             setSearchQuery('');
                           }}
-                          className="px-6 py-[12px] h-[44px] rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 transition-all flex items-center justify-center"
+                          className="px-5 py-2.5 rounded-lg bg-yellow-500 text-zinc-950 text-xs font-bold hover:bg-yellow-400 transition-all cursor-pointer"
                         >
                           Reset Filters
                         </button>
@@ -373,10 +374,10 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
         </div>
 
         {/* Pagination Footer */}
-        <div className="px-6 py-4 border-t border-[#E5E5EA] flex items-center justify-between text-[13px] text-[#555555]">
+        <div className="px-6 py-4 border-t border-[#3F3F46] bg-[#18181B] flex items-center justify-between text-xs text-zinc-400">
           <div>
-            Showing <span className="font-semibold text-[#000000]">{paginatedItems.length}</span> of{' '}
-            <span className="font-semibold text-[#000000]">{totalItems}</span> products
+            Showing <span className="font-bold text-zinc-100 font-mono">{paginatedItems.length}</span> of{' '}
+            <span className="font-bold text-zinc-100 font-mono">{totalItems}</span> products
           </div>
           <div className="flex items-center gap-3">
             <span className="mr-2">
@@ -387,19 +388,19 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
                 type="button"
                 onClick={prevPage}
                 disabled={!hasPrevPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="p-1.5 rounded-lg border border-[#3F3F46] bg-[#27272A] text-zinc-100 hover:bg-zinc-700 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Previous page"
               >
-                <ChevronLeft className="w-[16px] h-[16px]" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={nextPage}
                 disabled={!hasNextPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="p-1.5 rounded-lg border border-[#3F3F46] bg-[#27272A] text-zinc-100 hover:bg-zinc-700 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Next page"
               >
-                <ChevronRight className="w-[16px] h-[16px]" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -414,55 +415,55 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
         subtitle="Dynamic catalog breakdown retrieved directly from backend API"
         maxWidth="2xl"
       >
-        <div className="space-y-6">
+        <div className="space-y-6 text-zinc-50">
           {/* Summary KPIs */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-[#F5F5F7] p-5 rounded-[8px] border border-[#E5E5EA]">
-              <div className="text-[12px] font-semibold text-[#86868B] uppercase tracking-[0.05em]">
+            <div className="bg-[#27272A] p-4 rounded-xl border border-[#3F3F46]">
+              <div className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
                 Total Materials
               </div>
-              <div className="text-[24px] font-semibold text-[#000000] mt-1 tracking-tight">
+              <div className="text-xl font-bold font-mono text-zinc-100 mt-1">
                 {materialsBreakdown.length || materials.length} SKUs
               </div>
-              <div className="text-[13px] text-[#555555] mt-1">
+              <div className="text-xs text-zinc-400 mt-1">
                 {subCategoriesCount} distinct sub-categories
               </div>
             </div>
 
-            <div className="bg-[#F5F5F7] p-5 rounded-[8px] border border-[#E5E5EA]">
-              <div className="text-[12px] font-semibold text-[#86868B] uppercase tracking-[0.05em]">
+            <div className="bg-[#27272A] p-4 rounded-xl border border-[#3F3F46]">
+              <div className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
                 Material Categories
               </div>
-              <div className="text-[24px] font-semibold text-[#000000] mt-1 tracking-tight">
+              <div className="text-xl font-bold font-mono text-zinc-100 mt-1">
                 {materialCategoriesCount} Groups
               </div>
-              <div className="text-[13px] text-[#555555] mt-1">
+              <div className="text-xs text-zinc-400 mt-1">
                 Dynamic backend catalogs
               </div>
             </div>
 
-            <div className="bg-[#0071E3]/5 p-5 rounded-[8px] border border-[#0071E3]/20">
-              <div className="text-[12px] font-semibold text-[#0071E3] uppercase tracking-[0.05em]">
+            <div className="bg-yellow-500/10 p-4 rounded-xl border border-yellow-500/30">
+              <div className="text-xs font-bold text-yellow-400 uppercase tracking-wider">
                 Trade Services Count
               </div>
-              <div className="text-[24px] font-semibold text-[#0071E3] mt-1 tracking-tight">
+              <div className="text-xl font-bold font-mono text-yellow-400 mt-1">
                 {servicesCount} Services
               </div>
-              <div className="text-[13px] text-[#0071E3] mt-1">
+              <div className="text-xs text-yellow-400 mt-1">
                 No sub-categories
               </div>
             </div>
           </div>
 
           {/* Trade Services Explanation Note */}
-          <div className="flex items-start gap-4 p-5 rounded-[8px] bg-[#F5F5F7] border border-[#E5E5EA]">
-            <Wrench className="w-[20px] h-[20px] text-[#86868B] shrink-0 mt-0.5" />
-            <div className="text-[14px] text-[#555555] space-y-2">
-              <span className="font-semibold text-[#000000] block">
+          <div className="flex items-start gap-4 p-4 rounded-xl bg-[#27272A] border border-[#3F3F46]">
+            <Wrench className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-zinc-300 space-y-1">
+              <span className="font-bold text-zinc-100 block">
                 Trade Services: {servicesCount} Services (No sub-categories)
               </span>
-              <p className="leading-relaxed">
-                Trade services (Masonry & Bricklaying, Structural Welder, Concealed Electrical Wiring, Sanitary & Core Plumbing) are direct labor listings. They operate as standalone service bookings without any child sub-categories.
+              <p className="leading-relaxed text-zinc-400">
+                Trade services (Masonry, Welding, Electrical, Plumbing) are direct labor listings. They operate as standalone service bookings without any child sub-categories.
               </p>
             </div>
           </div>
@@ -470,33 +471,33 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
           {/* Detailed Materials List & Sub-categories count */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-[13px] font-semibold text-[#000000] uppercase tracking-[0.05em]">
-                Each Material Sub-Category Count & Tags
+              <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                Material Sub-Category Count & Tags
               </h4>
-              <span className="text-[13px] text-[#86868B]">
+              <span className="text-xs font-mono text-zinc-400">
                 {materialsBreakdown.length} materials indexed
               </span>
             </div>
 
-            <div className="max-h-[320px] overflow-y-auto border border-[#E5E5EA] rounded-[8px] divide-y divide-[#E5E5EA] bg-white">
+            <div className="max-h-[320px] overflow-y-auto border border-[#3F3F46] rounded-xl divide-y divide-[#3F3F46] bg-[#18181B]">
               {materialsBreakdown.map((item, index) => (
-                <div key={item.id} className="p-4 hover:bg-[#F5F5F7]/70 transition-colors flex items-start justify-between gap-4">
+                <div key={item.id} className="p-3.5 hover:bg-[#27272A] transition-colors flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[13px] text-[#86868B]">{index + 1}.</span>
-                      <span className="font-semibold text-[14px] text-[#000000] truncate">
+                      <span className="font-mono text-xs text-zinc-500">{index + 1}.</span>
+                      <span className="font-bold text-xs text-zinc-100 truncate">
                         {item.name}
                       </span>
                     </div>
-                    <div className="text-[13px] text-[#555555] mt-1 ml-[22px]">
-                      Category: <span className="text-[#000000] font-medium">{item.category}</span>
+                    <div className="text-xs text-zinc-400 mt-1 ml-[22px]">
+                      Category: <span className="text-zinc-200 font-semibold">{item.category}</span>
                     </div>
                     {item.subCategories.length > 0 && (
-                      <div className="mt-2 ml-[22px] flex flex-wrap gap-2">
+                      <div className="mt-2 ml-[22px] flex flex-wrap gap-1.5">
                         {item.subCategories.map((sub) => (
                           <span
                             key={sub}
-                            className="inline-block px-2 py-1 rounded-[4px] text-[12px] bg-[#F5F5F7] text-[#555555] border border-[#E5E5EA]"
+                            className="inline-block px-2 py-0.5 rounded text-[11px] bg-[#27272A] text-zinc-300 border border-[#3F3F46]"
                           >
                             {sub}
                           </span>
@@ -507,10 +508,10 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
 
                   <div className="shrink-0 text-right">
                     <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-[6px] text-[12px] font-medium border ${
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                         item.subCategoriesCount > 0
-                          ? 'bg-[#0071E3]/10 text-[#0071E3] border-[#0071E3]/20'
-                          : 'bg-[#F5F5F7] text-[#555555] border-[#E5E5EA]'
+                          ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                          : 'bg-[#27272A] text-zinc-400 border-[#3F3F46]'
                       }`}
                     >
                       {item.subCategoriesCount} {item.subCategoriesCount === 1 ? 'sub-category' : 'sub-categories'}
@@ -521,11 +522,11 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
             </div>
           </div>
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-end pt-2">
             <button
               type="button"
               onClick={() => setIsDetailsModalOpen(false)}
-              className="px-6 py-[12px] h-[44px] rounded-[8px] bg-[#000000] text-white text-[14px] font-medium hover:bg-[#333333] transition-colors"
+              className="px-6 py-2 rounded-lg bg-yellow-500 text-zinc-950 text-xs font-bold hover:bg-yellow-400 transition-colors cursor-pointer"
             >
               Close
             </button>
@@ -560,3 +561,4 @@ export const MaterialsView: React.FC<MaterialsViewProps> = ({ onShowToast }) => 
     </div>
   );
 };
+

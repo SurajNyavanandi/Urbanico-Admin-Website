@@ -152,7 +152,7 @@ export interface IAuditLog {
     partnerName?: string;
     partnerRole?: string;
     note?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   ip?: string;
   userAgent?: string;
@@ -187,12 +187,12 @@ export interface IPartner {
   bankVerified?: boolean;
 }
 
-export interface IApiResponse<T = any> {
+export interface IApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
   count?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Runtime companion exports to satisfy bundler treeshaking

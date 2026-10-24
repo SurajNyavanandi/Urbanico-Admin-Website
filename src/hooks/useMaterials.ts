@@ -95,16 +95,81 @@ export function useMaterials(initialCategory: string = 'all') {
       });
       setMaterialsBreakdown(breakdown);
 
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch materials from backend');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch materials from backend');
     } finally {
       setIsLoading(false);
     }
   }, [selectedCategory, selectedSubCategory, debouncedSearch]);
 
   useEffect(() => {
-    loadMaterials();
-  }, [loadMaterials]);
+    let ignore = false;
+
+    Promise.all([
+      fetchCategoriesApi(),
+      fetchMaterialsApi({
+        category: selectedCategory === 'all' ? undefined : selectedCategory,
+        subCategory: selectedSubCategory === 'all' ? undefined : selectedSubCategory,
+        search: debouncedSearch.trim() || undefined,
+      }),
+      fetchServicesApi(),
+    ])
+      .then(([cats, data, srvs]) => {
+        if (!ignore) {
+          setCategories(cats);
+          const fetchedMaterials = data.materials || [];
+          setMaterials(fetchedMaterials);
+
+          const catsFound = cats.length;
+          const matCatsSet = new Set(
+            fetchedMaterials.map((m) => m.category || m.categoryId).filter(Boolean)
+          );
+          const matCatsFound = matCatsSet.size;
+
+          const subCatsSet = new Set<string>();
+          fetchedMaterials.forEach((m) => {
+            if (m.subCategory && typeof m.subCategory === 'string') {
+              m.subCategory.split(',').forEach((sub) => {
+                const trimmed = sub.trim();
+                if (trimmed) subCatsSet.add(trimmed);
+              });
+            }
+          });
+          const subCatsFound = subCatsSet.size;
+          const totalServicesCount = data.servicesCount ?? srvs.length;
+
+          setCategoriesCount(catsFound);
+          setMaterialCategoriesCount(matCatsFound);
+          setSubCategoriesCount(subCatsFound);
+          setServicesCount(totalServicesCount);
+
+          const breakdown: IMaterialSubCategoryDetail[] = fetchedMaterials.map((m) => {
+            const subs = m.subCategory && typeof m.subCategory === 'string'
+              ? m.subCategory.split(',').map((s) => s.trim()).filter(Boolean)
+              : [];
+            return {
+              id: m._id || m.id,
+              name: m.name,
+              category: m.category,
+              subCategoriesCount: subs.length,
+              subCategories: subs,
+            };
+          });
+          setMaterialsBreakdown(breakdown);
+          setIsLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!ignore) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch materials from backend');
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedCategory, selectedSubCategory, debouncedSearch]);
 
   // When selectedCategory changes, reset selectedSubCategory to 'all'
   const handleCategoryChange = (catId: string) => {

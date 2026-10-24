@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { verifyOtpApi } from '../../services/authApi';
 import { IAdminUser } from '../../types';
+import { ShieldCheck, HardHat } from 'lucide-react';
 
 interface AdminLoginViewProps {
   onLoginSuccess: (user: IAdminUser, token: string) => void;
@@ -39,73 +40,82 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
       });
 
       executeLogin(res.user, res.token);
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed. Please check your credentials.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Authentication failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-[400px] flex flex-col items-center">
+    <div className="min-h-screen bg-[#09090B] flex flex-col items-center justify-center p-6 text-zinc-50">
+      <div className="w-full max-w-[420px] bg-[#18181B] border border-[#3F3F46] rounded-xl p-8 shadow-2xl flex flex-col items-center">
         
-        {/* Brand */}
-        <img 
-          src="https://res.cloudinary.com/dfr0zghtc/image/upload/v1792405677/finallogo_vgc2kq.jpg" 
-          alt="Urbanico Logo" 
-          className="w-16 h-16 rounded-[12px] object-cover mb-8 shadow-sm" 
-        />
+        {/* Brand Lockup */}
+        <div className="w-14 h-14 bg-yellow-500 rounded-xl flex items-center justify-center text-zinc-950 font-black mb-6 shadow-lg shadow-yellow-500/20">
+          <HardHat className="w-8 h-8 text-zinc-950" />
+        </div>
         
-        <div className="text-center mb-10 w-full">
-          <h1 className="text-[56px] font-bold leading-[1.2] tracking-[-0.04em] text-[#000000] mb-2">
-            Sign In
+        <div className="text-center mb-8 w-full">
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-50 mb-2">
+            Urbanico Admin
           </h1>
-          <p className="text-[16px] font-normal leading-[1.5] text-[#555555]">
-            Urbanico Administrator Portal
+          <p className="text-sm font-normal text-zinc-400">
+            Civil & Construction Procurement Portal
           </p>
         </div>
 
         <div className="w-full">
-          <form onSubmit={handleSubmit} className="space-y-6 w-full">
+          <form onSubmit={handleSubmit} className="space-y-5 w-full">
             {error && (
-              <div className="p-4 bg-[#F5F5F7] rounded-[8px] text-[14px] text-[#FF3B30] text-center font-medium">
+              <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-lg text-xs text-red-400 text-center font-medium">
                 {error}
               </div>
             )}
 
             <div className="space-y-4">
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Admin Phone"
-                className="w-full h-[44px] px-4 bg-white text-[16px] text-[#000000] rounded-[8px] border border-[#D2D2D7] focus:border-[#0071E3] focus:ring-1 focus:ring-[#0071E3] focus:outline-none transition-colors"
-                required
-              />
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  Admin Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Admin Phone"
+                  className="w-full h-11 px-4 bg-[#27272A] text-sm text-zinc-100 rounded-lg border border-[#3F3F46] focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none transition-colors"
+                  required
+                />
+              </div>
 
-              <input
-                type="password"
-                value={authKey}
-                onChange={(e) => setAuthKey(e.target.value)}
-                placeholder="OTP / Password"
-                className="w-full h-[44px] px-4 bg-white text-[16px] text-[#000000] rounded-[8px] border border-[#D2D2D7] focus:border-[#0071E3] focus:ring-1 focus:ring-[#0071E3] focus:outline-none transition-colors"
-                required
-              />
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  OTP / Security Password
+                </label>
+                <input
+                  type="password"
+                  value={authKey}
+                  onChange={(e) => setAuthKey(e.target.value)}
+                  placeholder="OTP / Password"
+                  className="w-full h-11 px-4 bg-[#27272A] text-sm text-zinc-100 rounded-lg border border-[#3F3F46] focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none transition-colors"
+                  required
+                />
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-[44px] px-6 py-[12px] bg-[#0071E3] hover:bg-blue-600 active:scale-[0.98] text-white text-[16px] font-medium rounded-[8px] shadow-sm transition-all duration-300 flex items-center justify-center cursor-pointer"
+              className="w-full h-11 px-6 bg-yellow-500 hover:bg-yellow-400 active:scale-[0.98] text-zinc-950 text-sm font-semibold rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
             >
-              {isLoading ? 'Authenticating...' : 'Sign In'}
+              <ShieldCheck className="w-4 h-4 text-zinc-950" />
+              <span>{isLoading ? 'Authenticating...' : 'Sign In'}</span>
             </button>
           </form>
         </div>
 
-        <div className="mt-[64px] text-center">
-          <p className="text-[14px] text-[#A1A1A6] font-normal">
+        <div className="mt-8 pt-6 border-t border-[#3F3F46] w-full text-center">
+          <p className="text-xs text-zinc-500 font-normal">
             Single-Admin Secure Gateway • Urbanico Core v2.4
           </p>
         </div>
@@ -113,4 +123,5 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLoginSuccess }
     </div>
   );
 };
+
 

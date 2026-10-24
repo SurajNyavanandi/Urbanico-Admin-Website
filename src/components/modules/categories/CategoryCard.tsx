@@ -14,9 +14,9 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit }) 
     : [];
 
   return (
-    <div className="bg-white rounded-[12px] border border-[#E5E5EA] overflow-hidden flex flex-col justify-between hover:border-[#D2D2D7] hover:shadow-sm transition-all duration-300 group">
+    <div className="bg-[#18181B] rounded-xl border border-[#3F3F46] overflow-hidden flex flex-col justify-between hover:border-yellow-500/50 shadow-md transition-all duration-200 group text-zinc-50">
       {/* Category Image Header */}
-      <div className="h-[120px] w-full bg-[#F5F5F7] relative overflow-hidden border-b border-[#E5E5EA]">
+      <div className="h-[120px] w-full bg-[#27272A] relative overflow-hidden border-b border-[#3F3F46]">
         {category.image && !imgError ? (
           <img
             src={category.image}
@@ -26,24 +26,24 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit }) 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-[#A1A1A6] bg-linear-to-br from-[#F5F5F7] to-[#E5E5EA]">
-            <Layers className="w-[28px] h-[28px] mb-2 text-[#A1A1A6]" />
-            <span className="text-[12px] font-medium">{category.name}</span>
+          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 bg-[#27272A]">
+            <Layers className="w-7 h-7 mb-1 text-zinc-500" />
+            <span className="text-xs font-semibold text-zinc-400">{category.name}</span>
           </div>
         )}
         <div className="absolute top-3 left-3">
-          <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-[#0071E3] bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-[6px] border border-[#0071E3]/20 shadow-xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-400 bg-zinc-950/90 backdrop-blur-md px-2.5 py-1 rounded-md border border-yellow-500/30 shadow-sm">
             {category.tag || category.id.toUpperCase()}
           </span>
         </div>
-        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm p-1 rounded-[8px] border border-[#E5E5EA]/60 shadow-xs">
+        <div className="absolute top-3 right-3 bg-zinc-950/90 backdrop-blur-md p-1 rounded-lg border border-[#3F3F46]">
           <button
             type="button"
             onClick={() => onEdit(category)}
-            className="p-1.5 rounded-[6px] text-[#555555] hover:text-[#000000] hover:bg-[#F5F5F7] transition-colors"
+            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-[#27272A] transition-colors cursor-pointer"
             title="Edit category tags and pricing"
           >
-            <Edit2 className="w-[14px] h-[14px]" />
+            <Edit2 className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -52,30 +52,30 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit }) 
         <div>
           <div className="flex items-start justify-between gap-3 mb-2">
             <div>
-              <span className="text-[13px] font-medium text-[#86868B]">{category.count}</span>
-              <h3 className="text-[18px] font-semibold text-[#000000] tracking-tight leading-tight mt-1">
+              <span className="text-xs font-mono text-zinc-400">{category.count}</span>
+              <h3 className="text-base font-bold text-zinc-100 tracking-tight leading-tight mt-0.5">
                 {category.name}
               </h3>
             </div>
           </div>
 
           {category.description && (
-            <p className="text-[14px] text-[#555555] mb-4 leading-relaxed">
+            <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
               {category.description}
             </p>
           )}
 
           {/* Brand chips */}
           <div className="mt-4">
-            <span className="text-[12px] font-semibold text-[#86868B] uppercase tracking-[0.05em] mb-2 flex items-center gap-1.5">
-              <Tag className="w-[14px] h-[14px] text-[#86868B]" />
+            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Tag className="w-3.5 h-3.5 text-zinc-400" />
               Sub-Categories & Brands:
             </span>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {brands.map((b, i) => (
                 <span
                   key={i}
-                  className="text-[12px] font-medium bg-[#F5F5F7] text-[#000000] px-3 py-1.5 rounded-[6px] border border-[#E5E5EA]"
+                  className="text-xs font-medium bg-[#27272A] text-zinc-200 px-2.5 py-1 rounded-md border border-[#3F3F46]"
                 >
                   {b}
                 </span>
@@ -84,9 +84,9 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit }) 
           </div>
         </div>
 
-        <div className="mt-5 pt-4 border-t border-[#E5E5EA] flex items-center justify-between">
-          <span className="text-[13px] text-[#86868B]">Live App Display Price:</span>
-          <span className="text-[15px] font-bold font-mono text-[#0071E3]">
+        <div className="mt-5 pt-4 border-t border-[#3F3F46] flex items-center justify-between">
+          <span className="text-xs text-zinc-400">Live App Display Price:</span>
+          <span className="text-sm font-bold font-mono text-yellow-400">
             {category.priceLabel}
           </span>
         </div>
@@ -94,3 +94,4 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit }) 
     </div>
   );
 };
+

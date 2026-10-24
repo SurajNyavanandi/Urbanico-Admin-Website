@@ -21,16 +21,36 @@ export function useOrders(initialStatus: string = 'all') {
         search: debouncedSearch.trim() || undefined,
       });
       setOrders(data.orders || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch orders from server');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch orders from server');
     } finally {
       setIsLoading(false);
     }
   }, [selectedStatus, debouncedSearch]);
 
   useEffect(() => {
-    loadOrders();
-  }, [loadOrders]);
+    let ignore = false;
+    fetchOrdersApi({
+      status: selectedStatus === 'all' ? undefined : selectedStatus,
+      search: debouncedSearch.trim() || undefined,
+    })
+      .then((data) => {
+        if (!ignore) {
+          setOrders(data.orders || []);
+          setIsLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!ignore) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch orders from server');
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedStatus, debouncedSearch]);
 
   // Optimistic status update with automatic rollback on failure
   const updateStatus = async (
@@ -63,7 +83,7 @@ export function useOrders(initialStatus: string = 'all') {
       const updated = await updateOrderStatusApi(orderId, newStatus, extraFields);
       setOrders((prev) => prev.map((o) => (o._id === orderId ? updated : o)));
       return updated;
-    } catch (err: any) {
+    } catch (err: unknown) {
       setOrders(previousOrders); // Rollback state
       throw err;
     }

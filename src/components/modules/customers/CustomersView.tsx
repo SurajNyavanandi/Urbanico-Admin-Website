@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { fetchCustomersApi } from '../../../services/authApi';
 import { ICustomer } from '../../../types';
 import { StatCard } from '../../common/StatCard';
@@ -27,21 +27,26 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const loadCustomers = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const list = await fetchCustomersApi();
-      setCustomers(list);
-    } catch (err: any) {
-      onShowToast('Error', err.message || 'Failed to fetch customer directory', 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onShowToast]);
-
   useEffect(() => {
-    loadCustomers();
-  }, [loadCustomers]);
+    let ignore = false;
+    fetchCustomersApi()
+      .then((list) => {
+        if (!ignore) {
+          setCustomers(list);
+          setIsLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!ignore) {
+          const msg = err instanceof Error ? err.message : 'Failed to fetch customer directory';
+          onShowToast('Error', msg, 'error');
+          setIsLoading(false);
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [onShowToast]);
 
   const filteredCustomers = useMemo(() => {
     if (!searchQuery.trim()) return customers;
@@ -109,10 +114,10 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+      <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-[15px] font-semibold text-[#000000]">Authorized Builder Profiles</h3>
-          <p className="text-[14px] text-[#555555] mt-1">
+          <h3 className="text-[15px] font-semibold text-zinc-50">Authorized Builder Profiles</h3>
+          <p className="text-[14px] text-zinc-400 mt-1">
             Verified construction companies and site delivery credentials.
           </p>
         </div>
@@ -127,11 +132,11 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] overflow-hidden">
+      <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden shadow-lg">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#E5E5EA] bg-[#F5F5F7] text-[13px] font-medium text-[#555555]">
+              <tr className="border-b border-zinc-800 bg-zinc-950 text-[13px] font-medium text-zinc-400">
                 <th className="p-4 px-6">Company Entity & GSTIN</th>
                 <th className="p-4">Contact Person</th>
                 <th className="p-4">Primary Delivery Site</th>
@@ -140,25 +145,25 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
                 <th className="p-4 px-6 text-center">Account Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-zinc-800/80">
               {isLoading ? (
                 <TableSkeletonRows count={4} cols={6} />
               ) : paginatedItems.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-16 text-center">
                     <div className="max-w-sm mx-auto flex flex-col items-center">
-                      <div className="w-16 h-16 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#A1A1A6] mb-4">
-                        <Inbox className="w-8 h-8" />
+                      <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500 mb-4">
+                        <Inbox className="w-8 h-8 text-yellow-500/60" />
                       </div>
-                      <h4 className="text-[18px] font-semibold text-[#000000]">No builders found</h4>
-                      <p className="text-[14px] text-[#86868B] mt-2 mb-6">
+                      <h4 className="text-[18px] font-semibold text-zinc-100">No builders found</h4>
+                      <p className="text-[14px] text-zinc-400 mt-2 mb-6">
                         Try modifying your search criteria.
                       </p>
                       {searchQuery && (
                         <button
                           type="button"
                           onClick={() => setSearchQuery('')}
-                          className="px-6 py-[12px] h-[44px] rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 transition-all flex items-center justify-center"
+                          className="px-6 py-2.5 rounded-lg bg-yellow-500 text-zinc-950 text-[14px] font-semibold hover:bg-yellow-400 transition-all flex items-center justify-center cursor-pointer"
                         >
                           Clear Search
                         </button>
@@ -170,58 +175,58 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
                 paginatedItems.map((c) => (
                   <tr
                     key={c._id}
-                    className="border-b border-[#E5E5EA] hover:bg-[#F5F5F7]/80 transition-colors duration-200"
+                    className="hover:bg-zinc-800/60 transition-colors duration-200"
                   >
                     <td className="p-4 px-6">
-                      <div className="font-semibold text-[15px] text-[#000000] leading-tight">
+                      <div className="font-semibold text-[15px] text-zinc-100 leading-tight">
                         {c.companyName}
                       </div>
                       {c.gstin && (
-                        <div className="text-[13px] font-mono text-[#86868B] mt-1">
+                        <div className="text-[13px] font-mono text-zinc-400 mt-1">
                           GSTIN: {c.gstin}
                         </div>
                       )}
                     </td>
 
                     <td className="p-4">
-                      <div className="text-[14px] font-medium text-[#000000]">{c.name}</div>
-                      <div className="text-[13px] font-mono text-[#555555] flex items-center gap-1.5 mt-1">
-                        <Phone className="w-[14px] h-[14px] text-[#86868B]" />
-                        <a href={`tel:${c.phone}`} className="hover:text-[#0071E3] transition-colors">
+                      <div className="text-[14px] font-medium text-zinc-200">{c.name}</div>
+                      <div className="text-[13px] font-mono text-zinc-400 flex items-center gap-1.5 mt-1">
+                        <Phone className="w-[14px] h-[14px] text-yellow-500/80" />
+                        <a href={`tel:${c.phone}`} className="hover:text-yellow-400 transition-colors">
                           +91 {c.phone}
                         </a>
                       </div>
                       {c.email && (
-                        <div className="text-[12px] text-[#86868B] flex items-center gap-1.5 mt-1">
-                          <Mail className="w-[14px] h-[14px]" />
+                        <div className="text-[12px] text-zinc-400 flex items-center gap-1.5 mt-1">
+                          <Mail className="w-[14px] h-[14px] text-zinc-500" />
                           <span>{c.email}</span>
                         </div>
                       )}
                     </td>
 
                     <td className="p-4">
-                      <div className="flex items-start gap-2 text-[14px] text-[#000000]">
-                        <MapPin className="w-[16px] h-[16px] text-[#0071E3] shrink-0 mt-0.5" />
+                      <div className="flex items-start gap-2 text-[14px] text-zinc-200">
+                        <MapPin className="w-[16px] h-[16px] text-yellow-500 shrink-0 mt-0.5" />
                         <span className="truncate max-w-[220px]">{c.primarySite}</span>
                       </div>
-                      <div className="text-[13px] text-[#86868B] pl-[24px] mt-1">{c.city}</div>
+                      <div className="text-[13px] text-zinc-400 pl-[24px] mt-1">{c.city}</div>
                     </td>
 
                     <td className="p-4 text-right whitespace-nowrap">
-                      <span className="font-mono font-medium text-[15px] text-[#000000]">
+                      <span className="font-mono font-semibold text-[15px] text-zinc-100">
                         {c.totalOrders}
                       </span>
                     </td>
 
                     <td className="p-4 text-right whitespace-nowrap">
-                      <span className="font-mono font-medium text-[15px] text-[#000000]">
+                      <span className="font-mono font-semibold text-[15px] text-yellow-400">
                         {formatCurrency(c.totalSpend)}
                       </span>
                     </td>
 
                     <td className="p-4 px-6 text-center whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-[6px] text-[12px] font-medium bg-[#E8F5E9] text-[#2E7D32]">
-                        <span className="w-1.5 h-1.5 rounded-full mr-2 bg-[#4CAF50]" />
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[12px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full mr-2 bg-emerald-400" />
                         Active
                       </span>
                     </td>
@@ -233,10 +238,10 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
         </div>
 
         {/* Pagination Footer */}
-        <div className="px-6 py-4 border-t border-[#E5E5EA] flex items-center justify-between text-[13px] text-[#555555]">
+        <div className="px-6 py-4 border-t border-zinc-800 flex items-center justify-between text-[13px] text-zinc-400 bg-zinc-900">
           <div>
-            Showing <span className="font-semibold text-[#000000]">{paginatedItems.length}</span> of{' '}
-            <span className="font-semibold text-[#000000]">{totalItems}</span> builders
+            Showing <span className="font-semibold text-zinc-100">{paginatedItems.length}</span> of{' '}
+            <span className="font-semibold text-zinc-100">{totalItems}</span> builders
           </div>
           <div className="flex items-center gap-3">
             <span className="mr-2">
@@ -247,7 +252,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
                 type="button"
                 onClick={prevPage}
                 disabled={!hasPrevPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="p-2 rounded-lg border border-zinc-700 text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Previous page"
               >
                 <ChevronLeft className="w-[16px] h-[16px]" />
@@ -256,7 +261,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({ onShowToast }) => 
                 type="button"
                 onClick={nextPage}
                 disabled={!hasNextPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="p-2 rounded-lg border border-zinc-700 text-zinc-200 hover:bg-zinc-800 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Next page"
               >
                 <ChevronRight className="w-[16px] h-[16px]" />

@@ -8,8 +8,8 @@ interface StatusBadgeProps {
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'order' }) => {
   let label = String(status);
-  let bgClass = 'bg-[#F5F5F7] text-[#555555]';
-  let dotClass = 'bg-[#86868B]';
+  let badgeClass = 'bg-zinc-800 text-zinc-400 border border-zinc-700';
+  let dotClass = 'bg-zinc-400';
 
   const normalized = typeof status === 'string' ? status.toLowerCase() : String(status);
 
@@ -17,66 +17,66 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'order'
     switch (normalized) {
       case 'received':
         label = 'Received';
-        bgClass = 'bg-[#0071E3]/10 text-[#0071E3]';
-        dotClass = 'bg-[#0071E3]';
+        badgeClass = 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30';
+        dotClass = 'bg-yellow-400';
         break;
       case 'confirmed':
         label = 'Confirmed';
-        bgClass = 'bg-[#0071E3]/10 text-[#0071E3]';
-        dotClass = 'bg-[#0071E3]';
+        badgeClass = 'bg-blue-500/10 text-blue-400 border border-blue-500/30';
+        dotClass = 'bg-blue-400';
         break;
       case 'processing':
-        label = 'Processing';
-        bgClass = 'bg-[#FFCC00]/20 text-[#D4A300]';
-        dotClass = 'bg-[#D4A300]';
+        label = 'Loading Quarry';
+        badgeClass = 'bg-amber-500/10 text-amber-400 border border-amber-500/30';
+        dotClass = 'bg-amber-400';
         break;
       case 'dispatched':
       case 'in_transit':
         label = normalized === 'dispatched' ? 'Dispatched' : 'In Transit';
-        bgClass = 'bg-[#FF9500]/10 text-[#FF9500]';
-        dotClass = 'bg-[#FF9500]';
+        badgeClass = 'bg-purple-500/10 text-purple-400 border border-purple-500/30';
+        dotClass = 'bg-purple-400';
         break;
       case 'unloading':
         label = 'Unloading';
-        bgClass = 'bg-[#7C3AED]/10 text-[#7C3AED]';
-        dotClass = 'bg-[#7C3AED]';
+        badgeClass = 'bg-purple-500/10 text-purple-400 border border-purple-500/30';
+        dotClass = 'bg-purple-400';
         break;
       case 'delivered':
         label = 'Delivered';
-        bgClass = 'bg-[#34C759]/10 text-[#34C759]';
-        dotClass = 'bg-[#34C759]';
+        badgeClass = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+        dotClass = 'bg-emerald-400';
         break;
       case 'cancelled':
         label = 'Cancelled';
-        bgClass = 'bg-[#FF3B30]/10 text-[#FF3B30]';
-        dotClass = 'bg-[#FF3B30]';
+        badgeClass = 'bg-red-500/10 text-red-400 border border-red-500/30';
+        dotClass = 'bg-red-400';
         break;
       default:
         label = String(status);
-        bgClass = 'bg-[#F5F5F7] text-[#555555]';
-        dotClass = 'bg-[#A1A1A6]';
+        badgeClass = 'bg-zinc-800 text-zinc-400 border border-zinc-700';
+        dotClass = 'bg-zinc-400';
     }
   } else if (type === 'payment') {
     switch (normalized) {
       case 'paid':
         label = 'Paid';
-        bgClass = 'bg-[#34C759]/10 text-[#34C759]';
-        dotClass = 'bg-[#34C759]';
+        badgeClass = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+        dotClass = 'bg-emerald-400';
         break;
       case 'pending':
         label = 'Pending';
-        bgClass = 'bg-[#FF9500]/10 text-[#FF9500]';
-        dotClass = 'bg-[#FF9500]';
+        badgeClass = 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30';
+        dotClass = 'bg-yellow-400';
         break;
       case 'partially_paid':
         label = 'Partially Paid';
-        bgClass = 'bg-[#0071E3]/10 text-[#0071E3]';
-        dotClass = 'bg-[#0071E3]';
+        badgeClass = 'bg-blue-500/10 text-blue-400 border border-blue-500/30';
+        dotClass = 'bg-blue-400';
         break;
       case 'refunded':
         label = 'Refunded';
-        bgClass = 'bg-[#E5E5EA] text-[#555555]';
-        dotClass = 'bg-[#A1A1A6]';
+        badgeClass = 'bg-zinc-800 text-zinc-400 border border-zinc-700';
+        dotClass = 'bg-zinc-400';
         break;
       default:
         label = String(status);
@@ -84,21 +84,22 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, type = 'order'
   } else if (type === 'stock') {
     if (status === true || normalized === 'true' || normalized === 'in stock') {
       label = 'In Stock';
-      bgClass = 'bg-[#34C759]/10 text-[#34C759]';
-      dotClass = 'bg-[#34C759]';
+      badgeClass = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+      dotClass = 'bg-emerald-400';
     } else {
       label = 'Out of Stock';
-      bgClass = 'bg-[#FF3B30]/10 text-[#FF3B30]';
-      dotClass = 'bg-[#FF3B30]';
+      badgeClass = 'bg-red-500/10 text-red-400 border border-red-500/30';
+      dotClass = 'bg-red-400';
     }
   }
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium whitespace-nowrap tracking-tight ${bgClass}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${badgeClass}`}
     >
-      <span className={`w-[6px] h-[6px] rounded-full mr-2 ${dotClass}`} />
+      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${dotClass}`} />
       {label}
     </span>
   );
 };
+

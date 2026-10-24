@@ -8,7 +8,7 @@ interface AddEditMaterialModalProps {
   onClose: () => void;
   material: IMaterial | null;
   categories?: ICategory[];
-  onSave: (data: Partial<IMaterial>, isEdit: boolean, id?: string) => Promise<any>;
+  onSave: (data: Partial<IMaterial>, isEdit: boolean, id?: string) => Promise<unknown>;
   onShowToast: (title: string, message?: string, type?: 'success' | 'error' | 'info') => void;
 }
 
@@ -51,41 +51,43 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setImgPreviewError(false);
-    if (material) {
-      setName(material.name || '');
-      setCategoryId(material.categoryId || (categories[0]?.id || 'cement'));
-      setSubCategory(material.subCategory || '');
-      setBrand(material.brand || '');
-      setGrade(material.grade || '');
-      setImage(material.image || '');
-      setDefaultPrice(material.defaultPrice || 100);
-      setUnit(material.unit || '50kg Bag');
-      setHsnCode(material.hsnCode || '252329');
-      setGstRate(material.gstRate || 18);
-      setInStock(material.inStock ?? true);
-      setStockQuantity(material.stockQuantity || 0);
-      setMinOrderQuantity(material.minOrderQuantity || 1);
-      setOriginYard(material.originYard || 'Hyderabad Main Depot');
-      setDescription(material.description || '');
-    } else {
-      const firstCat = categories[0];
-      setName('');
-      setCategoryId(firstCat?.id || 'cement');
-      setSubCategory('');
-      setBrand('');
-      setGrade('');
-      setImage(firstCat?.image || 'https://res.cloudinary.com/dfr0zghtc/image/upload/v1786614395/cement2_s1pf60.jpg');
-      setDefaultPrice(firstCat?.basePrice || 385);
-      setUnit(firstCat?.unit || '50kg Bag');
-      setHsnCode('252329');
-      setGstRate(firstCat?.gstRate || 18);
-      setInStock(true);
-      setStockQuantity(1000);
-      setMinOrderQuantity(10);
-      setOriginYard('Hyderabad Main Depot');
-      setDescription('');
-    }
+    if (!isOpen) return;
+    queueMicrotask(() => {
+      if (material) {
+        setName(material.name || '');
+        setCategoryId(material.categoryId || (categories[0]?.id || 'cement'));
+        setSubCategory(material.subCategory || '');
+        setBrand(material.brand || '');
+        setGrade(material.grade || '');
+        setImage(material.image || '');
+        setDefaultPrice(material.defaultPrice || 100);
+        setUnit(material.unit || '50kg Bag');
+        setHsnCode(material.hsnCode || '252329');
+        setGstRate(material.gstRate || 18);
+        setInStock(material.inStock ?? true);
+        setStockQuantity(material.stockQuantity || 0);
+        setMinOrderQuantity(material.minOrderQuantity || 1);
+        setOriginYard(material.originYard || 'Hyderabad Main Depot');
+        setDescription(material.description || '');
+      } else {
+        const firstCat = categories[0];
+        setName('');
+        setCategoryId(firstCat?.id || 'cement');
+        setSubCategory('');
+        setBrand('');
+        setGrade('');
+        setImage(firstCat?.image || 'https://res.cloudinary.com/dfr0zghtc/image/upload/v1786614395/cement2_s1pf60.jpg');
+        setDefaultPrice(firstCat?.basePrice || 385);
+        setUnit(firstCat?.unit || '50kg Bag');
+        setHsnCode('252329');
+        setGstRate(firstCat?.gstRate || 18);
+        setInStock(true);
+        setStockQuantity(1000);
+        setMinOrderQuantity(10);
+        setOriginYard('Hyderabad Main Depot');
+        setDescription('');
+      }
+    });
   }, [material, isOpen, categories]);
 
   const activeCategory = categories.find((c) => c.id === categoryId);
@@ -150,8 +152,9 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
         'success'
       );
       onClose();
-    } catch (err: any) {
-      onShowToast('Save Error', err.message || 'Failed to save product', 'error');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to save product';
+      onShowToast('Save Error', msg, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -170,9 +173,9 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
       subtitle="Direct sync with dynamic backend catalog"
       maxWidth="lg"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 text-zinc-50">
         <div>
-          <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
             Product Title *
           </label>
           <input
@@ -180,16 +183,16 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. UltraTech Super Cement"
-            className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+            className="w-full bg-[#27272A] text-xs px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 placeholder-zinc-500 focus:border-yellow-500 focus:outline-none"
             required
           />
         </div>
 
         {/* Product Image URL with Live Preview and Quick Presets */}
-        <div className="bg-[#F9F9FB] rounded-xl p-3 border border-[#E5E5EA]">
+        <div className="bg-[#18181B] rounded-xl p-3 border border-[#3F3F46]">
           <div className="flex items-center justify-between mb-1.5">
-            <label className="text-xs font-semibold text-[#1D1D1F] uppercase flex items-center gap-1.5">
-              <ImageIcon className="w-3.5 h-3.5 text-[#007AFF]" />
+            <label className="text-xs font-bold text-zinc-300 uppercase flex items-center gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5 text-yellow-400" />
               Material Image URL
             </label>
             {image && (
@@ -199,7 +202,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
                   setImage('');
                   setImgPreviewError(false);
                 }}
-                className="text-[11px] text-[#86868B] hover:text-[#FF3B30] flex items-center gap-0.5"
+                className="text-[11px] text-zinc-400 hover:text-red-400 flex items-center gap-0.5 cursor-pointer"
               >
                 <X className="w-3 h-3" /> Clear Image
               </button>
@@ -207,7 +210,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="w-16 h-16 rounded-xl overflow-hidden bg-white border border-[#E5E5EA] shrink-0 flex items-center justify-center relative shadow-sm">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#27272A] border border-[#3F3F46] shrink-0 flex items-center justify-center relative shadow-sm">
               {image && !imgPreviewError ? (
                 <img
                   src={image}
@@ -217,7 +220,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center text-[#86868B] p-1 text-center">
+                <div className="flex flex-col items-center justify-center text-zinc-500 p-1 text-center">
                   <ImageIcon className="w-5 h-5 mb-0.5" />
                   <span className="text-[9px] leading-tight">No Image</span>
                 </div>
@@ -232,14 +235,14 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
                   setImage(e.target.value);
                   setImgPreviewError(false);
                 }}
-                placeholder="https://... image url (Cloudinary, Unsplash, etc.)"
-                className="w-full bg-white text-xs px-3 py-2 rounded-lg border border-[#E5E5EA] focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20 font-mono"
+                placeholder="https://... image url"
+                className="w-full bg-[#27272A] text-xs px-3 py-2 rounded-lg border border-[#3F3F46] text-zinc-100 placeholder-zinc-500 focus:border-yellow-500 focus:outline-none font-mono"
               />
 
               {/* Quick Image Presets */}
               <div className="mt-2">
-                <span className="text-[10px] text-[#86868B] mb-1 flex items-center gap-1 font-medium">
-                  <Sparkles className="w-2.5 h-2.5 text-[#007AFF]" /> Quick Presets:
+                <span className="text-[10px] text-zinc-400 mb-1 flex items-center gap-1 font-medium">
+                  <Sparkles className="w-2.5 h-2.5 text-yellow-400" /> Quick Presets:
                 </span>
                 <div className="flex flex-wrap gap-1">
                   {MATERIAL_IMAGE_PRESETS.map((preset) => (
@@ -250,7 +253,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
                         setImage(preset.url);
                         setImgPreviewError(false);
                       }}
-                      className="px-2 py-0.5 rounded text-[10px] bg-white text-[#555558] hover:text-[#007AFF] hover:border-[#007AFF] border border-[#E5E5EA] transition-colors"
+                      className="px-2 py-0.5 rounded text-[10px] bg-[#27272A] text-zinc-300 hover:text-yellow-400 hover:border-yellow-500 border border-[#3F3F46] transition-colors cursor-pointer"
                     >
                       {preset.label}
                     </button>
@@ -263,16 +266,16 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
-              Category (Dynamic Backend) *
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
+              Category *
             </label>
             <select
               value={categoryId}
               onChange={handleCategoryChange}
-              className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-[#27272A] text-xs px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 focus:border-yellow-500 focus:outline-none"
             >
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
+                <option key={cat.id} value={cat.id} className="bg-[#18181B] text-zinc-100">
                   {cat.name}
                 </option>
               ))}
@@ -280,7 +283,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
               Brand / Manufacturer
             </label>
             <input
@@ -288,35 +291,35 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
               value={brand}
               onChange={(e) => setBrand(e.target.value)}
               placeholder="e.g. UltraTech, ACC, JSW"
-              className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-[#27272A] text-xs px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 placeholder-zinc-500 focus:border-yellow-500 focus:outline-none"
             />
           </div>
         </div>
 
         {/* Sub-Category Input with dynamic suggestions */}
         <div>
-          <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
             Sub-Category / Specification Tags
           </label>
           <input
             type="text"
             value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
-            placeholder="e.g. Crushed Stone, M-Sand, UltraTech, ACC"
-            className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+            placeholder="e.g. Crushed Stone, M-Sand, UltraTech"
+            className="w-full bg-[#27272A] text-xs px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 placeholder-zinc-500 focus:border-yellow-500 focus:outline-none"
           />
           {suggestedSubCategories.length > 0 && (
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              <span className="text-[10px] text-[#86868B]">Suggested:</span>
+              <span className="text-[10px] text-zinc-400">Suggested:</span>
               {suggestedSubCategories.map((sub) => (
                 <button
                   key={sub}
                   type="button"
                   onClick={() => handleSubCategorySelect(sub)}
-                  className={`px-2 py-0.5 rounded-md text-[11px] font-medium border transition-colors ${
+                  className={`px-2 py-0.5 rounded text-[11px] font-semibold border transition-colors cursor-pointer ${
                     subCategory.includes(sub)
-                      ? 'bg-[#007AFF]/10 border-[#007AFF] text-[#007AFF]'
-                      : 'bg-white border-[#E5E5EA] text-[#86868B] hover:text-[#1D1D1F]'
+                      ? 'bg-yellow-500/20 border-yellow-500 text-yellow-400'
+                      : 'bg-[#27272A] border-[#3F3F46] text-zinc-400 hover:text-zinc-100'
                   }`}
                 >
                   +{sub}
@@ -328,7 +331,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
               Unit Price (₹) *
             </label>
             <input
@@ -337,13 +340,13 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
               step="any"
               value={defaultPrice}
               onChange={(e) => setDefaultPrice(parseFloat(e.target.value) || 0)}
-              className="w-full bg-[#F5F5F7] text-sm font-mono font-semibold px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-[#27272A] text-xs font-mono font-bold text-zinc-100 px-3.5 py-2.5 rounded-lg border border-[#3F3F46] focus:border-yellow-500 focus:outline-none"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
               Unit of Measure *
             </label>
             <input
@@ -351,13 +354,13 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
               placeholder="50kg Bag, Ton, etc."
-              className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-[#27272A] text-xs px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 focus:border-yellow-500 focus:outline-none"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
               GST Rate (%)
             </label>
             <input
@@ -365,14 +368,14 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
               value={gstRate}
               onChange={(e) => setGstRate(parseInt(e.target.value, 10) || 0)}
               placeholder="28, 18, 5"
-              className="w-full bg-[#F5F5F7] text-sm font-mono px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-[#27272A] text-xs font-mono px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 focus:border-yellow-500 focus:outline-none"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
               HSN Code
             </label>
             <input
@@ -380,27 +383,27 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
               value={hsnCode}
               onChange={(e) => setHsnCode(e.target.value)}
               placeholder="e.g. 252329"
-              className="w-full bg-[#F5F5F7] text-sm font-mono px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-[#27272A] text-xs font-mono px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 focus:border-yellow-500 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+            <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
               Stock Quantity
             </label>
             <input
               type="number"
               value={stockQuantity}
               onChange={(e) => setStockQuantity(parseInt(e.target.value, 10) || 0)}
-              className="w-full bg-[#F5F5F7] text-sm font-mono px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+              className="w-full bg-[#27272A] text-xs font-mono px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 focus:border-yellow-500 focus:outline-none"
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-3 bg-[#F5F5F7] rounded-xl border border-[#E5E5EA]">
+        <div className="flex items-center justify-between p-3 bg-[#27272A] rounded-lg border border-[#3F3F46]">
           <div>
-            <span className="text-xs font-bold text-[#1D1D1F] block">Available in Stock</span>
-            <span className="text-[11px] text-[#86868B]">
+            <span className="text-xs font-bold text-zinc-100 block">Available in Stock</span>
+            <span className="text-[11px] text-zinc-400">
               Controls whether customers can place orders for this SKU
             </span>
           </div>
@@ -408,7 +411,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
             type="button"
             onClick={() => setInStock(!inStock)}
             className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 ease-in-out ${
-              inStock ? 'bg-[#34C759]' : 'bg-[#E5E5EA]'
+              inStock ? 'bg-emerald-500' : 'bg-[#3F3F46]'
             }`}
           >
             <div
@@ -420,7 +423,7 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#86868B] uppercase mb-1">
+          <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
             Origin Yard / Dispatch Depot
           </label>
           <input
@@ -428,23 +431,23 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
             value={originYard}
             onChange={(e) => setOriginYard(e.target.value)}
             placeholder="e.g. Miyapur Depot, Patancheru Quarry"
-            className="w-full bg-[#F5F5F7] text-sm px-3.5 py-2.5 rounded-xl border border-[#E5E5EA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/20"
+            className="w-full bg-[#27272A] text-xs px-3.5 py-2.5 rounded-lg border border-[#3F3F46] text-zinc-100 placeholder-zinc-500 focus:border-yellow-500 focus:outline-none"
           />
         </div>
 
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-[#E5E5EA]">
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3 border-t border-[#3F3F46]">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="w-full sm:w-auto py-[10px] px-6 rounded-[8px] border border-[#E5E5EA] text-[14px] font-medium text-[#000000] hover:bg-[#F5F5F7] transition-all"
+            className="w-full sm:w-auto py-2.5 px-6 rounded-lg border border-[#3F3F46] bg-[#27272A] text-xs font-semibold text-zinc-100 hover:bg-zinc-700 transition-all cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto py-[10px] px-6 rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 active:scale-[0.98] transition-all"
+            className="w-full sm:w-auto py-2.5 px-6 rounded-lg bg-yellow-500 text-zinc-950 text-xs font-bold hover:bg-yellow-400 active:scale-[0.98] transition-all cursor-pointer shadow-md"
           >
             {isLoading ? 'Saving to Database...' : isEdit ? 'Update Product' : 'Create Product'}
           </button>
@@ -453,3 +456,4 @@ export const AddEditMaterialModal: React.FC<AddEditMaterialModalProps> = ({
     </Modal>
   );
 };
+

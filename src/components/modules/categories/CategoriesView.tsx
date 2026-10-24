@@ -45,18 +45,18 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ onShowToast }) =
       </div>
 
       {/* Overview explanation banner */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-6">
+      <div className="bg-[#18181B] rounded-xl border border-[#3F3F46] p-6 text-zinc-50 shadow-md">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h3 className="text-[15px] font-semibold text-[#000000]">Category Brand & Display Pricing Controls</h3>
-            <p className="text-[14px] text-[#555555] mt-1">
+            <h3 className="text-base font-bold text-zinc-100">Category Brand & Display Pricing Controls</h3>
+            <p className="text-xs text-zinc-400 mt-1">
               These settings control the top hero carousels and subcategory pill tags that customers see when opening the Urbanico mobile apps.
             </p>
           </div>
           <button
             type="button"
             onClick={refresh}
-            className="self-start sm:self-auto w-full sm:w-auto px-4 h-[44px] rounded-[8px] border border-[#E5E5EA] bg-[#F5F5F7] text-[14px] font-medium text-[#000000] hover:bg-[#E5E5EA] transition-colors shrink-0"
+            className="self-start sm:self-auto w-full sm:w-auto px-4 h-10 rounded-lg border border-[#3F3F46] bg-[#27272A] text-xs font-semibold text-zinc-100 hover:bg-zinc-700 transition-colors shrink-0 cursor-pointer"
           >
             Reload Categories
           </button>
@@ -89,3 +89,4 @@ export const CategoriesView: React.FC<CategoriesViewProps> = ({ onShowToast }) =
     </div>
   );
 };
+

@@ -90,7 +90,12 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
   const handleUpdateStatus = async (
     orderId: string,
     status: OrderStatus,
-    extraFields?: any
+    extraFields?: {
+      vehicleNumber?: string;
+      driverName?: string;
+      driverPhone?: string;
+      eWayBillNo?: string;
+    }
   ) => {
     const updated = await updateStatus(orderId, status, extraFields);
     if (selectedOrder && (selectedOrder._id === orderId || selectedOrder.orderNumber === orderId)) {
@@ -191,9 +196,9 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
         />
       </div>
 
-      {/* Triage Controls: Status Segment Pills + Search Input + Export CSV */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        {/* Status Segment Pills */}
+      {/* Triage Controls: Status Filter Buttons + Search Input + Export CSV */}
+      <div className="bg-[#18181B] rounded-xl border border-[#3F3F46] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shadow-md">
+        {/* Status Filter Buttons */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
           {STATUS_FILTERS.map((f) => {
             const isActive = selectedStatus === f.id;
@@ -202,10 +207,10 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
                 key={f.id}
                 type="button"
                 onClick={() => setSelectedStatus(f.id)}
-                className={`px-4 py-2 rounded-full text-[14px] font-medium whitespace-nowrap transition-all duration-300 ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                   isActive
-                    ? 'bg-[#0071E3] text-white shadow-sm'
-                    : 'bg-[#F5F5F7] text-[#555555] hover:text-[#000000] hover:bg-[#E5E5EA]'
+                    ? 'bg-yellow-500 text-zinc-950 shadow-md shadow-yellow-500/10'
+                    : 'bg-[#27272A] text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 border border-[#3F3F46]'
                 }`}
               >
                 {f.label}
@@ -220,27 +225,27 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
             <SearchInput
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder="Search by order #, client, city..."
+              placeholder="Search order #, client, city..."
             />
           </div>
           <button
             type="button"
             onClick={handleExportCsv}
-            className="flex items-center gap-2 px-3.5 h-[44px] rounded-[8px] border border-[#E5E5EA] bg-white hover:bg-[#F5F5F7] text-[#1D1D1F] text-[13px] font-medium active:scale-[0.98] transition-all cursor-pointer shrink-0"
+            className="flex items-center gap-2 px-3.5 h-10 rounded-lg border border-[#3F3F46] bg-[#27272A] hover:bg-zinc-700 text-zinc-100 text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer shrink-0"
             title="Export filtered orders list as CSV"
           >
-            <Download className="w-[14px] h-[14px] text-[#555555]" />
+            <Download className="w-3.5 h-3.5 text-yellow-400" />
             <span className="hidden sm:inline">Export CSV</span>
           </button>
         </div>
       </div>
 
       {/* Orders Table Container */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] overflow-hidden">
+      <div className="bg-[#18181B] rounded-xl border border-[#3F3F46] overflow-hidden shadow-lg">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#E5E5EA] bg-[#F5F5F7] text-[13px] font-medium text-[#555555]">
+              <tr className="border-b border-[#3F3F46] bg-[#27272A] text-xs font-bold uppercase tracking-wider text-zinc-400">
                 <th className="p-4 px-6">Order ID & Date</th>
                 <th className="p-4">Customer Entity</th>
                 <th className="p-4">Delivery Site</th>
@@ -250,18 +255,18 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
                 <th className="p-4 px-6 text-right">Inspect</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#3F3F46]">
               {isLoading ? (
                 <TableSkeletonRows count={5} cols={7} />
               ) : paginatedItems.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="p-16 text-center">
                     <div className="max-w-sm mx-auto flex flex-col items-center">
-                      <div className="w-16 h-16 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#A1A1A6] mb-4">
-                        <Inbox className="w-8 h-8" />
+                      <div className="w-14 h-14 rounded-xl bg-[#27272A] border border-[#3F3F46] flex items-center justify-center text-zinc-500 mb-4">
+                        <Inbox className="w-7 h-7" />
                       </div>
-                      <h4 className="text-[18px] font-semibold text-[#000000]">No orders found</h4>
-                      <p className="text-[14px] text-[#86868B] mt-2 mb-6">
+                      <h4 className="text-base font-bold text-zinc-100">No orders found</h4>
+                      <p className="text-xs text-zinc-400 mt-2 mb-6">
                         {searchQuery || selectedStatus !== 'all'
                           ? 'Try adjusting your search query or clear the status filters.'
                           : 'Orders placed by customers will immediately appear in this live queue.'}
@@ -273,7 +278,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
                             setSelectedStatus('all');
                             setSearchQuery('');
                           }}
-                          className="px-6 py-[12px] h-[44px] rounded-[8px] bg-[#0071E3] text-white text-[14px] font-medium hover:bg-blue-600 transition-all flex items-center justify-center"
+                          className="px-5 py-2.5 rounded-lg bg-yellow-500 text-zinc-950 text-xs font-bold hover:bg-yellow-400 transition-all cursor-pointer"
                         >
                           Clear Filters
                         </button>
@@ -295,10 +300,10 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
         </div>
 
         {/* Table Footer with Pagination */}
-        <div className="px-6 py-4 border-t border-[#E5E5EA] flex items-center justify-between text-[13px] text-[#555555]">
+        <div className="px-6 py-4 border-t border-[#3F3F46] bg-[#18181B] flex items-center justify-between text-xs text-zinc-400">
           <div>
-            Showing <span className="font-semibold text-[#000000]">{paginatedItems.length}</span> of{' '}
-            <span className="font-semibold text-[#000000]">{totalItems}</span> orders
+            Showing <span className="font-bold text-zinc-100 font-mono">{paginatedItems.length}</span> of{' '}
+            <span className="font-bold text-zinc-100 font-mono">{totalItems}</span> orders
           </div>
           <div className="flex items-center gap-3">
             <span className="mr-2">
@@ -309,19 +314,19 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
                 type="button"
                 onClick={prevPage}
                 disabled={!hasPrevPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="p-1.5 rounded-lg border border-[#3F3F46] bg-[#27272A] text-zinc-100 hover:bg-zinc-700 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Previous page"
               >
-                <ChevronLeft className="w-[16px] h-[16px]" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={nextPage}
                 disabled={!hasNextPage}
-                className="p-2 rounded-[8px] border border-[#E5E5EA] text-[#000000] hover:bg-[#F5F5F7] disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                className="p-1.5 rounded-lg border border-[#3F3F46] bg-[#27272A] text-zinc-100 hover:bg-zinc-700 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
                 aria-label="Next page"
               >
-                <ChevronRight className="w-[16px] h-[16px]" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -339,3 +344,4 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onShowToast }) => {
     </div>
   );
 };
+

@@ -48,30 +48,30 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Dialog container */}
       <div
-        className={`relative w-full ${maxWidthClass} bg-[#FFFFFF] rounded-[16px] shadow-[0_12px_24px_rgba(0,0,0,0.12)] border border-[#E5E5EA] z-10 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col`}
+        className={`relative w-full ${maxWidthClass} bg-[#18181B] rounded-xl shadow-2xl border border-[#3F3F46] text-zinc-50 z-10 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col`}
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#E5E5EA] bg-[#FFFFFF] sticky top-0 z-10">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#3F3F46] bg-[#18181B] sticky top-0 z-10">
           <div>
-            <h3 className="text-[18px] sm:text-[20px] font-semibold text-[#000000] tracking-[-0.02em] leading-tight">{title}</h3>
-            {subtitle && <p className="text-[13px] text-[#555555] mt-1">{subtitle}</p>}
+            <h3 className="text-lg sm:text-xl font-bold text-zinc-50 tracking-tight leading-tight">{title}</h3>
+            {subtitle && <p className="text-xs text-zinc-400 mt-1">{subtitle}</p>}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-[32px] h-[32px] shrink-0 rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#555555] hover:text-[#000000] hover:bg-[#E5E5EA] transition-colors ml-2"
+            className="w-8 h-8 shrink-0 rounded-lg bg-[#27272A] flex items-center justify-center text-zinc-400 hover:text-zinc-50 hover:bg-zinc-700 transition-colors ml-2 cursor-pointer"
             aria-label="Close dialog"
           >
-            <X className="w-[16px] h-[16px]" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -81,3 +81,4 @@ export const Modal: React.FC<ModalProps> = ({
     </div>
   );
 };
+

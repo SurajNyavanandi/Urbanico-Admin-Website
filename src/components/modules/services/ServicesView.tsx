@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   fetchServicesApi,
   createServiceApi,
@@ -25,21 +25,26 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadServices = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const list = await fetchServicesApi();
-      setServices(list);
-    } catch (err: any) {
-      onShowToast('Error', err.message || 'Failed to fetch contractor services', 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onShowToast]);
-
   useEffect(() => {
-    loadServices();
-  }, [loadServices]);
+    let ignore = false;
+    fetchServicesApi()
+      .then((list) => {
+        if (!ignore) {
+          setServices(list);
+          setIsLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!ignore) {
+          const msg = err instanceof Error ? err.message : 'Failed to fetch contractor services';
+          onShowToast('Error', msg, 'error');
+          setIsLoading(false);
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [onShowToast]);
 
   const handleSaveService = async (data: Partial<IService>, isEdit: boolean, id?: string) => {
     if (isEdit && id) {
@@ -61,8 +66,9 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
       setServices((prev) => prev.filter((s) => s._id !== deleteTarget.id && s.id !== deleteTarget.id));
       onShowToast('Service Removed', `${deleteTarget.name} has been archived.`, 'info');
       setDeleteTarget(null);
-    } catch (err: any) {
-      onShowToast('Delete Error', err.message || 'Failed to delete service', 'error');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete service';
+      onShowToast('Delete Error', msg, 'error');
     } finally {
       setIsDeleting(false);
     }
@@ -95,10 +101,10 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
       </div>
 
       {/* Header controls banner */}
-      <div className="bg-white rounded-[8px] border border-[#E5E5EA] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-[#18181B] rounded-xl border border-[#3F3F46] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-zinc-50 shadow-md">
         <div>
-          <h3 className="text-[15px] font-semibold text-[#000000]">Contractor & Labor Services Directory ({services.length} Total)</h3>
-          <p className="text-[14px] text-[#555555] mt-1">
+          <h3 className="text-base font-bold text-zinc-100">Contractor & Labor Services Directory ({services.length} Total)</h3>
+          <p className="text-xs text-zinc-400 mt-1">
             Direct trade bookings for civil sites. Note: Trade services do not have sub-categories.
           </p>
         </div>
@@ -109,9 +115,9 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
             setEditingService(null);
             setIsModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 px-6 h-[44px] w-full sm:w-auto shrink-0 rounded-[8px] bg-[#0071E3] hover:bg-blue-600 text-white text-[14px] font-medium shadow-sm active:scale-[0.98] transition-all"
+          className="flex items-center justify-center gap-2 px-5 h-10 w-full sm:w-auto shrink-0 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-zinc-950 text-xs font-bold shadow-md active:scale-[0.98] transition-all cursor-pointer"
         >
-          <Plus className="w-[16px] h-[16px]" />
+          <Plus className="w-4 h-4 text-zinc-950" />
           <span>Add Trade Service</span>
         </button>
       </div>
@@ -161,3 +167,4 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onShowToast }) => {
     </div>
   );
 };
+

@@ -39,4 +39,4 @@ export class LRUCache<K, V> {
   }
 }
 
-export const queryCache = new LRUCache<string, any>(50);
+export const queryCache = new LRUCache<string, unknown>(50);

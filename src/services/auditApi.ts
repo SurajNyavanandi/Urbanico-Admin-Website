@@ -21,8 +21,9 @@ export async function fetchAuditLogsApi(limit = 50): Promise<{ logs: IAuditLog[]
     }
 
     return { logs, count: res.count || logs.length };
-  } catch (err: any) {
-    console.warn('[Urbanico] Audit logs API query:', err.message);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn('[Urbanico] Audit logs API query:', msg);
     return { logs: [], count: 0 };
   }
 }

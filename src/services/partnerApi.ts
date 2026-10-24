@@ -13,8 +13,9 @@ export async function fetchPartnersApi(): Promise<IPartner[]> {
       list = res.partners;
     }
     return list;
-  } catch (err: any) {
-    console.warn('[Urbanico] Partners API query:', err.message);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn('[Urbanico] Partners API query:', msg);
     return [];
   }
 }
